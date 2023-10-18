@@ -21,4 +21,47 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.flagged", appContext.packageName)
     }
+
+    private val db = FirestoreDB()
+    @Test
+    fun userTest() {
+        val user = User(
+            username = "test",
+            password = "test",
+            email = "test@test.com",
+            favouriteFlags = listOf()
+        )
+        val result = db.addUser(user)
+        assertEquals(true, result.isSuccess)
+        assertEquals(true,db.authUser("test","test"))
+
+        val users = db.getUsers()
+        assertEquals(true,users.contains(user))
+
+        db.deleteUser(user)
+        assertEquals(false, users.contains(user))
+    }
+
+    @Test
+    fun flagTest() {
+        val flag = Flag(
+            name = "test",
+            description = "test",
+            category = "test",
+            image = "test",
+            price = 10,
+            stock = 10
+        )
+
+        assertEquals(true,db.addFlag(flag))
+        var flags = db.getFlags()
+        println(flags)
+        assertEquals(true, flags.contains(flag))
+
+        db.updateStock("test", 5)
+        assertEquals(15, flags.find { it.name == "test" }?.stock)
+
+        db.deleteFlag(flag)
+        assertEquals(false, flags.contains(flag))
+    }
 }
