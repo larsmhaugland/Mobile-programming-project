@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Top section with search field, favorites button, and checkout button -->
+
+    <LinearLayout
+        android:id="@+id/topSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        >
+
+        <!-- Search field (You can customize this EditText as needed) -->
+        <EditText
+            android:id="@+id/searchField"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Search"
+            android:textColorHint="@android:color/black"
+            android:textColor="@android:color/black"
+            android:background="@drawable/black_border"
+            android:layout_marginRight="8dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            />
+
+        <!-- Favorites button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/favouritesButton"
+            android:layout_width="50dp"
+            android:layout_height="45dp"
+            style="@style/favouriteButtonFilled"
+            android:layout_marginRight="8dp"
+            />
+
+        <!-- Checkout button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/filterButton"
+            style="@style/RedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:text="Filter" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/checkoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Checkout"
+            style="@style/RedButton"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/topSection"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:gravity="center">
+
+    </LinearLayout>
+
+    <!-- List of items -->
+    <ListView
+        android:id="@+id/itemListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topSection"/>
+
+</RelativeLayout>

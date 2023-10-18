@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RedButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/red_button</item>
+        <item name="android:textColor">@android:color/white</item> <!-- Optional: Change text color to white -->
+    </style>
+    <style name="favouriteButtonFilled" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/favourite_filled</item>
+        <item name="android:backgroundTint">@color/red</item>
+    </style>
+    <style name="favouriteButtonUnfilled" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/favourite_unfilled</item>
+        <item name="android:backgroundTint">@color/red</item>
+    </style>
+
+</resources>
