@@ -60,6 +60,8 @@ class ExampleInstrumentedTest {
 
         db.updateStock("test", 5)
         assertEquals(15, flags.find { it.name == "test" }?.stock)
+        assertEquals(true, db.updatePrice("test", 15))
+        assertEquals(15, flags.find { it.name == "test" }?.price)
 
         db.deleteFlag(flag)
         assertEquals(false, flags.contains(flag))
