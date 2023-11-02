@@ -1,6 +1,7 @@
 package com.example.flagged
 
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -39,7 +40,7 @@ class FirestoreDB {
                     flags.add(flag)
                 }
             } catch(e: Exception) {
-                println("Error getting flags: $e")
+                Log.e("Firestore", "Error getting flags: $e")
             }
         }
         return flags
