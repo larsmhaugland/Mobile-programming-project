@@ -21,6 +21,7 @@ var shoppingCart = mutableListOf<ShoppingCartItem>()
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
+    private lateinit var filteredFlagItems : List<Flag>
     private lateinit var adapter: FlagAdapter
     private lateinit var editTextSearch: EditText
     private var isReverseSort = false
@@ -40,7 +41,9 @@ class ShopActivity : AppCompatActivity(){
     private fun sortHighLowByPrice(items: List<Flag>): List<Flag> {
         return items.sortedByDescending { it.price.toDouble() }
     }
-
+    private fun filterByCategory(items: List<Flag>, category: String): List<Flag> {
+        return items.filter { it.category == category }
+    }
 
     private fun showFilterDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.filter_options, null)
@@ -50,25 +53,38 @@ class ShopActivity : AppCompatActivity(){
         val sortLowHighRadioButton = dialogView.findViewById<RadioButton>(R.id.sortLowHigh)
         val sortHighLowRadioButton = dialogView.findViewById<RadioButton>(R.id.sortHighLow)
 
+        val categoryCountryRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryCountry)
+        val categoryNavalRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryNaval)
+        val categoryLimitedEditionRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryLimitedEdition)
+        val categoryLGBTQRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryLGBTQ)
+
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setTitle("Filter Options")
             .setPositiveButton("Apply") { dialog, _ ->
                 if (sortAZRadioButton.isChecked) {
-                    flagItems = sortAlphabetically(flagItems)
+                    filteredFlagItems = sortAlphabetically(flagItems)
                     isReverseSort = false
                 } else if (sortZARadioButton.isChecked) {
-                    flagItems = sortReverseAlphabetically(flagItems)
+                    filteredFlagItems = sortReverseAlphabetically(flagItems)
                     isReverseSort = true
                 }else if (sortLowHighRadioButton.isChecked) {
-            flagItems = sortLowHighByPrice(flagItems)
+            filteredFlagItems = sortLowHighByPrice(flagItems)
             isReverseSort = false
             } else if (sortHighLowRadioButton.isChecked) {
-            flagItems = sortHighLowByPrice(flagItems)
+            filteredFlagItems = sortHighLowByPrice(flagItems)
             isReverseSort = true
-            }
+            }else if (categoryCountryRadioButton.isChecked) {
+                    filteredFlagItems = filterByCategory(flagItems,"Country")
+                } else if (categoryNavalRadioButton.isChecked) {
+                    filteredFlagItems = filterByCategory(flagItems,"Naval")
+                } else if (categoryLimitedEditionRadioButton.isChecked) {
+                    filteredFlagItems = filterByCategory(flagItems,"Limited Edition")
+                } else if (categoryLGBTQRadioButton.isChecked) {
+                    filteredFlagItems = filterByCategory(flagItems, "LGBTQ+")
+                }
 
-                val newAdapter = FlagAdapter(this@ShopActivity, flagItems)
+                val newAdapter = FlagAdapter(this@ShopActivity, filteredFlagItems)
                 flagListView.adapter = newAdapter
 
                 dialog.dismiss()
@@ -80,6 +96,7 @@ class ShopActivity : AppCompatActivity(){
 
         dialog.show()
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
@@ -110,6 +127,7 @@ class ShopActivity : AppCompatActivity(){
         }
 
         flagItems = db.getFlags()
+        filteredFlagItems = flagItems
 
         adapter = FlagAdapter(this, flagItems)
         flagListView.adapter = adapter
