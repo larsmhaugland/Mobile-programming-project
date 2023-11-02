@@ -147,6 +147,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
         val flagNameTextView = itemView?.findViewById<TextView>(R.id.itemName)
         val flagImageView = itemView?.findViewById<ImageView>(R.id.itemImage)
         val flagPriceTextView = itemView?.findViewById<TextView>(R.id.itemPrice)
+        val flagDescriptionTextView = itemView?.findViewById<TextView>(R.id.itemDescription)
 
         val currentFlagItem = getItem(position)
 
@@ -154,6 +155,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
         val image = context.resources.getIdentifier(currentFlagItem?.image, "drawable", context.packageName)
         flagImageView?.setImageResource(image ?: 0)
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
+        flagDescriptionTextView?.text = currentFlagItem?.description
 
         return itemView!!
     }
