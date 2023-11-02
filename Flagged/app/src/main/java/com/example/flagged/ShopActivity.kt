@@ -12,6 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatButton
+data class ShoppingCartItem(val name: String, var amount: Int)
+
+var shoppingCart = mutableListOf<ShoppingCartItem>()
+
 
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
@@ -19,6 +24,7 @@ class ShopActivity : AppCompatActivity(){
     private lateinit var adapter: FlagAdapter
     private lateinit var editTextSearch: EditText
     private var isReverseSort = false
+    private var shoppingCart = listOf<ShoppingCartItem>()
 
 
 
@@ -135,8 +141,11 @@ class ShopActivity : AppCompatActivity(){
 }
 
 
+
+
 class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
     ArrayAdapter<Flag>(context, 0, flagItems) {
+
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
@@ -148,6 +157,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
         val flagImageView = itemView?.findViewById<ImageView>(R.id.itemImage)
         val flagPriceTextView = itemView?.findViewById<TextView>(R.id.itemPrice)
         val flagDescriptionTextView = itemView?.findViewById<TextView>(R.id.itemDescription)
+        val flagAddToCart = itemView?.findViewById<AppCompatButton>(R.id.addToCartButton)
 
         val currentFlagItem = getItem(position)
 
@@ -156,6 +166,25 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
         flagImageView?.setImageResource(image ?: 0)
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
         flagDescriptionTextView?.text = currentFlagItem?.description
+
+        flagAddToCart?.setOnClickListener(){
+            val db = FirestoreDB()
+            if (currentFlagItem != null) {
+                if(db.updateStock(currentFlagItem.name,1) != ""){
+                    var flag = shoppingCart.find(){it.name === currentFlagItem.name}
+                    if(flag === null){
+                        flag = ShoppingCartItem(
+                            currentFlagItem.name,
+                            1
+                        )
+                        shoppingCart.add(flag)
+                    } else {
+                        flag.amount += 1
+                        shoppingCart[shoppingCart.indexOf(flag)] = flag
+                    }
+                }
+            }
+        }
 
         return itemView!!
     }

@@ -67,33 +67,26 @@ class FirestoreDB {
         return success
     }
 
-    fun updateStock(name: String, amount: Int) : Error {
-        val flag = flags.find { it.name == name }
-        var error : Error
-        if (flag == null) {
-            return Error("Flag not found")
-        }
+    fun updateStock(name: String, amount: Int) : String {
+        val flag = flags.find { it.name == name } ?: return "Flag not found"
 
         if ((flag.stock + amount) < 0) {
-
-            return Error("Not enough stock")
+            return "Not enough stock"
         }
 
-        runBlocking {
-            error = try {
+        return runBlocking {
+            return@runBlocking try {
                 flag.stock += amount
                 db.collection("flags")
                     .document(name)
                     .set(flag)
                     .await()
-                Error("")
+                ""
             } catch (e: Exception) {
                 println("Error updating stock: $e")
-                Error(e.toString())
+                e.toString()
             }
         }
-
-        return error
     }
 
     fun updatePrice(name : String, price : Int) : Boolean{
