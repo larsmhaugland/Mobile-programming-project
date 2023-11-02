@@ -213,6 +213,7 @@ class FirestoreDB {
 
     fun authUser(username: String, password: String) : Boolean {
         for (user in users) {
+            println(user.password + "   :   " + hashPassword(password))
             if (user.username == username && user.password == hashPassword(password)) {
                 return true
             }
