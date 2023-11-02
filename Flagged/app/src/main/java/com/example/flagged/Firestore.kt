@@ -8,7 +8,7 @@ import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 
 data class Flag(val name : String, var stock : Int, var price : Int, val description : String, val image : String, val category : String)
-data class User(val username : String, var password : String, val email : String, var favouriteFlags : List<Flag>)
+data class User(val username : String, var password : String, val email : String, var favouriteFlags : ArrayList<String>)
 
 class FirestoreDB {
     private val flags: MutableList<Flag> = mutableListOf()
@@ -153,8 +153,7 @@ class FirestoreDB {
                         username = document.id,
                         password = document.data["password"]!!.toString(),
                         email = document.data["email"]!!.toString(),
-                        favouriteFlags = document.data["favouriteFlags"] as List<Flag>?
-                            ?: listOf()
+                        favouriteFlags = (document.data["favouriteFlags"] as List<String>).toCollection(ArrayList())
                     )
 
                     users.add(user)
@@ -191,7 +190,17 @@ class FirestoreDB {
 
     fun patchUser(user: User) : Boolean {
         var success : Boolean
-        return true
+        success = try{
+            db.collection("users")
+                .document(user.username)
+                .update("favouriteFlags", user.favouriteFlags)
+            println("User patched")
+            true
+        } catch (e: Exception) {
+            println("Error patching user: $e")
+            false
+        }
+        return success
     }
     fun deleteUser(user: User) : Boolean{
         var success : Boolean

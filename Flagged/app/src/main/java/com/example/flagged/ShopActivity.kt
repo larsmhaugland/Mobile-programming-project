@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.widget.*
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.getIntent
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatButton
 
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
@@ -78,7 +80,7 @@ class ShopActivity : AppCompatActivity(){
                     filteredFlagItems = filterByCategory(flagItems, "LGBTQ+")
                 }
 
-                val newAdapter = FlagAdapter(this@ShopActivity, filteredFlagItems)
+                val newAdapter = FlagAdapter(this@ShopActivity, filteredFlagItems, intent)
                 flagListView.adapter = newAdapter
 
                 dialog.dismiss()
@@ -95,6 +97,7 @@ class ShopActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
         val adminState = intent.getBooleanExtra("admin", false)
+        val username = intent.getStringExtra("username")
         val db = FirestoreDB()
 
         editTextSearch = findViewById(R.id.searchField)
@@ -103,8 +106,8 @@ class ShopActivity : AppCompatActivity(){
         val favouritesButton = findViewById<Button>(R.id.favouritesButton)
         favouritesButton.setOnClickListener {
             val intent= Intent(this,FavouritesActivity::class.java)
+            intent.putExtra("username",username)
             startActivity(intent)
-
         }
 
         val checkOut = findViewById<Button>(R.id.checkoutButton)
@@ -123,7 +126,7 @@ class ShopActivity : AppCompatActivity(){
         flagItems = db.getFlags()
         filteredFlagItems = flagItems
 
-        adapter = FlagAdapter(this, flagItems)
+        adapter = FlagAdapter(this, flagItems, intent)
         flagListView.adapter = adapter
 
         editTextSearch.addTextChangedListener(object : TextWatcher {
@@ -143,7 +146,7 @@ class ShopActivity : AppCompatActivity(){
                 }
                 filteredFlagItems.addAll(itemsContainingSearchText)
 
-                val newAdapter = FlagAdapter(this@ShopActivity, filteredFlagItems)
+                val newAdapter = FlagAdapter(this@ShopActivity, filteredFlagItems, intent)
                 flagListView.adapter = newAdapter
             }
             override fun afterTextChanged(s: Editable?) {
@@ -153,7 +156,7 @@ class ShopActivity : AppCompatActivity(){
 }
 
 
-class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
+class FlagAdapter(context: Context, private val flagItems: List<Flag>, private val intent: Intent) :
     ArrayAdapter<Flag>(context, 0, flagItems) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -166,8 +169,31 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
         val flagImageView = itemView?.findViewById<ImageView>(R.id.itemImage)
         val flagPriceTextView = itemView?.findViewById<TextView>(R.id.itemPrice)
         val flagDescriptionTextView = itemView?.findViewById<TextView>(R.id.itemDescription)
+        val favouriteButton = itemView?.findViewById<AppCompatButton>(R.id.favouriteButton)
 
         val currentFlagItem = getItem(position)
+
+        favouriteButton?.setOnClickListener {
+            val db = FirestoreDB()
+            val username = intent.getStringExtra("username")
+            Log.e("Username", "$username", )
+            val flag = flagItems[position]
+            Log.e("Flag", "flag: $flag", )
+            if (username != null) {
+                val user = db.getUsers().find { it.username == username }
+                Log.d("User Patching", "Before: ${user?.favouriteFlags}")
+                if (user != null && flag != null) {
+                    if (user.favouriteFlags.contains(flag?.name)) {
+                        user.favouriteFlags.remove(flag?.name)
+                    } else {
+                        user.favouriteFlags.add(flag.name)
+                        Log.e("Favourites", "added flag:" + flag.name, )
+                    }
+                    db.patchUser(user)
+                }
+                Log.d("User Patching", "After: ${user?.favouriteFlags}")
+            }
+        }
 
         flagNameTextView?.text = currentFlagItem?.name
         val image = context.resources.getIdentifier(currentFlagItem?.image, "drawable", context.packageName)

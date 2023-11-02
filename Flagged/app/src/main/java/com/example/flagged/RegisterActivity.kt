@@ -37,7 +37,7 @@ class RegisterActivity : AppCompatActivity()  {
                 username = username,
                 password = password,
                 email = email,
-                favouriteFlags = listOf()
+                favouriteFlags = arrayListOf()
             )
             if(db.addUser(user).isFailure){
                 return@setOnClickListener
