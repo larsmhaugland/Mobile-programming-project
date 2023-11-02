@@ -13,27 +13,26 @@ import android.view.ViewGroup
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 
-data class flagItem(val name: String, val image: Int, val description: String, val price: String)
-
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
-    private lateinit var flagItems: List<flagItem>
+    private lateinit var flagItems: List<Flag>
     private lateinit var adapter: FlagAdapter
     private lateinit var editTextSearch: EditText
     private var isReverseSort = false
 
 
-    private fun sortAlphabetically(items: List<flagItem>): List<flagItem> {
+
+    private fun sortAlphabetically(items: List<Flag>): List<Flag> {
         return items.sortedBy { it.name }
     }
-    private fun sortReverseAlphabetically(items: List<flagItem>): List<flagItem> {
+    private fun sortReverseAlphabetically(items: List<Flag>): List<Flag> {
         return items.sortedByDescending { it.name }
     }
-    private fun sortLowHighByPrice(items: List<flagItem>): List<flagItem> {
-        return items.sortedBy { it.price.removePrefix("$").toDouble() }
+    private fun sortLowHighByPrice(items: List<Flag>): List<Flag> {
+        return items.sortedBy { it.price.toDouble() }
     }
-    private fun sortHighLowByPrice(items: List<flagItem>): List<flagItem> {
-        return items.sortedByDescending { it.price.removePrefix("$").toDouble() }
+    private fun sortHighLowByPrice(items: List<Flag>): List<Flag> {
+        return items.sortedByDescending { it.price.toDouble() }
     }
 
 
@@ -78,6 +77,8 @@ class ShopActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
+        val adminState = intent.getBooleanExtra("admin", false)
+        val db = FirestoreDB()
 
         editTextSearch = findViewById(R.id.searchField)
         flagListView = findViewById(R.id.itemListView)
@@ -102,15 +103,7 @@ class ShopActivity : AppCompatActivity(){
             showFilterDialog()
         }
 
-        flagItems = listOf(
-            flagItem("Norway", R.drawable.logo, "This is a flag", "$1.00"),
-            flagItem("Sweden", R.drawable.logo, "This is a flag", "$2.00"),
-            flagItem("Denmark", R.drawable.logo, "This is a flag", "$3.00"),
-            flagItem("Finland", R.drawable.logo, "This is a flag", "$4.00"),
-            flagItem("Faroe Islands", R.drawable.logo, "This is a flag", "$5.00"),
-            flagItem("Iceland", R.drawable.logo, "This is a flag", "$6.00"),
-            flagItem("Greenland", R.drawable.logo, "This is a flag", "$7.00")
-        )
+        flagItems = db.getFlags()
 
         adapter = FlagAdapter(this, flagItems)
         flagListView.adapter = adapter
@@ -120,7 +113,7 @@ class ShopActivity : AppCompatActivity(){
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString()
-                val filteredFlagItems = mutableListOf<flagItem>()
+                val filteredFlagItems = mutableListOf<Flag>()
 
                 val itemsStartingWithSearchText = flagItems.filter { flagItem ->
                     flagItem.name.startsWith(searchText, ignoreCase = true)
@@ -142,8 +135,8 @@ class ShopActivity : AppCompatActivity(){
 }
 
 
-class FlagAdapter(context: Context, private val flagItems: List<flagItem>) :
-    ArrayAdapter<flagItem>(context, 0, flagItems) {
+class FlagAdapter(context: Context, private val flagItems: List<Flag>) :
+    ArrayAdapter<Flag>(context, 0, flagItems) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
@@ -158,8 +151,9 @@ class FlagAdapter(context: Context, private val flagItems: List<flagItem>) :
         val currentFlagItem = getItem(position)
 
         flagNameTextView?.text = currentFlagItem?.name
-        flagImageView?.setImageResource(currentFlagItem?.image ?: 0)
-        flagPriceTextView?.text = currentFlagItem?.price
+        val image = context.resources.getIdentifier(currentFlagItem?.image, "drawable", context.packageName)
+        flagImageView?.setImageResource(image ?: 0)
+        flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
 
         return itemView!!
     }

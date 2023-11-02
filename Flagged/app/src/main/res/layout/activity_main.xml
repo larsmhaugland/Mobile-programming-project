@@ -27,16 +27,24 @@
         android:hint="Password"
         android:layout_marginTop="8dp"
         android:inputType="textPassword"
-
         />
 
 
-<androidx.appcompat.widget.AppCompatButton
-    android:id="@+id/submitButton"
-    android:layout_marginTop="8dp"
-    android:layout_width="200dp"
-    android:layout_height="wrap_content"
-    android:text="Submit"
-    style="@style/RedButton"
-    />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/submitButton"
+        android:layout_marginTop="8dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        style="@style/RedButton"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:clickable="true"
+        android:text="Don't have an account? Sign up here"
+        android:layout_marginTop="16dp"
+        />
 </LinearLayout>

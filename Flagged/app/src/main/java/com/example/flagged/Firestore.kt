@@ -1,10 +1,7 @@
 package com.example.flagged
 
-import com.google.android.gms.tasks.OnCompleteListener
+
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.core.FirestoreClient
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
@@ -191,6 +188,10 @@ class FirestoreDB {
         return result
     }
 
+    fun patchUser(user: User) : Boolean {
+        var success : Boolean
+        return true
+    }
     fun deleteUser(user: User) : Boolean{
         var success : Boolean
         runBlocking {

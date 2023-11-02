@@ -54,7 +54,7 @@ class ExampleInstrumentedTest {
         )
 
         assertEquals(true,db.addFlag(flag))
-        var flags = db.getFlags()
+        val flags = db.getFlags()
         println(flags)
         assertEquals(true, flags.contains(flag))
 
