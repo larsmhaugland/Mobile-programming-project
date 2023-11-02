@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.widget.*
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.getIntent
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -14,6 +13,10 @@ import android.view.ViewGroup
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
+data class ShoppingCartItem(val name: String, var amount: Int)
+
+var shoppingCart = mutableListOf<ShoppingCartItem>()
+
 
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
@@ -22,6 +25,7 @@ class ShopActivity : AppCompatActivity(){
     private lateinit var adapter: FlagAdapter
     private lateinit var editTextSearch: EditText
     private var isReverseSort = false
+    private var shoppingCart = listOf<ShoppingCartItem>()
 
 
 
@@ -108,6 +112,7 @@ class ShopActivity : AppCompatActivity(){
             val intent= Intent(this,FavouritesActivity::class.java)
             intent.putExtra("username",username)
             startActivity(intent)
+
         }
 
         val checkOut = findViewById<Button>(R.id.checkoutButton)
@@ -170,6 +175,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         val flagPriceTextView = itemView?.findViewById<TextView>(R.id.itemPrice)
         val flagDescriptionTextView = itemView?.findViewById<TextView>(R.id.itemDescription)
         val favouriteButton = itemView?.findViewById<AppCompatButton>(R.id.favouriteButton)
+        val flagAddToCart = itemView?.findViewById<AppCompatButton>(R.id.addToCartButton)
 
         val currentFlagItem = getItem(position)
 
@@ -200,6 +206,25 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagImageView?.setImageResource(image ?: 0)
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
         flagDescriptionTextView?.text = currentFlagItem?.description
+
+        flagAddToCart?.setOnClickListener(){
+            val db = FirestoreDB()
+            if (currentFlagItem != null) {
+                if(db.updateStock(currentFlagItem.name,1) != ""){
+                    var flag = shoppingCart.find(){it.name === currentFlagItem.name}
+                    if(flag === null){
+                        flag = ShoppingCartItem(
+                            currentFlagItem.name,
+                            1
+                        )
+                        shoppingCart.add(flag)
+                    } else {
+                        flag.amount += 1
+                        shoppingCart[shoppingCart.indexOf(flag)] = flag
+                    }
+                }
+            }
+        }
 
         return itemView!!
     }
