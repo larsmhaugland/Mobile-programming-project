@@ -100,7 +100,6 @@ class ShopActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
-        val adminState = intent.getBooleanExtra("admin", false)
         val username = intent.getStringExtra("username")
         val db = FirestoreDB()
 
@@ -178,21 +177,23 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         val flagAddToCart = itemView?.findViewById<AppCompatButton>(R.id.addToCartButton)
 
         val currentFlagItem = getItem(position)
+        val db = FirestoreDB()
+        val username = intent.getStringExtra("username")
+        val user = db.getUsers().find { it.username == username }
 
         favouriteButton?.setOnClickListener {
-            val db = FirestoreDB()
-            val username = intent.getStringExtra("username")
             Log.e("Username", "$username", )
             val flag = flagItems[position]
             Log.e("Flag", "flag: $flag", )
             if (username != null) {
-                val user = db.getUsers().find { it.username == username }
                 Log.d("User Patching", "Before: ${user?.favouriteFlags}")
                 if (user != null && flag != null) {
                     if (user.favouriteFlags.contains(flag?.name)) {
                         user.favouriteFlags.remove(flag?.name)
+                        favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
                     } else {
                         user.favouriteFlags.add(flag.name)
+                        favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
                         Log.e("Favourites", "added flag:" + flag.name, )
                     }
                     db.patchUser(user)
@@ -206,6 +207,13 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagImageView?.setImageResource(image ?: 0)
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
         flagDescriptionTextView?.text = currentFlagItem?.description
+        if(user !=null){
+        if(user.favouriteFlags.contains(currentFlagItem?.name)){
+            favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
+        } else {
+            favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
+        }
+        }
 
         flagAddToCart?.setOnClickListener(){
             val db = FirestoreDB()

@@ -29,10 +29,14 @@ class MainActivity : AppCompatActivity() {
             if(!db.authUser(username,password)){
                 return@setOnClickListener
             }
+            if(username == "admin"){
+                val intent= Intent(this,AdminActivity::class.java)
+                startActivity(intent)
+            }else{
             val intent= Intent(this,ShopActivity::class.java)
             intent.putExtra("username",username)
-            intent.putExtra("admin",username == "admin")
             startActivity(intent)
+            }
         }
 
     }

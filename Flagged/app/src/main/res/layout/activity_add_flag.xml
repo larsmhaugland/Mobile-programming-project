@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="ADD FLAG"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Name Label and Input -->
+    <TextView
+        android:id="@+id/nameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name:"
+        android:layout_below="@id/titleTextView"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/nameInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nameLabel"
+        android:layout_marginTop="8dp"
+        android:hint="Enter name" />
+
+    <!-- Price Label and Input -->
+    <TextView
+        android:id="@+id/priceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Price:"
+        android:layout_below="@id/nameInput"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/priceInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/priceLabel"
+        android:layout_marginTop="8dp"
+        android:hint="Enter price"
+        android:inputType="numberDecimal" />
+
+    <!-- Stock Label and Input -->
+    <TextView
+        android:id="@+id/stockLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stock:"
+        android:layout_below="@id/priceInput"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/stockInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/stockLabel"
+        android:layout_marginTop="8dp"
+        android:hint="Enter stock"
+        android:inputType="number" />
+
+    <!-- Category Label and Dropdown -->
+    <TextView
+        android:id="@+id/categoryLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Category:"
+        android:layout_below="@id/stockInput"
+        android:layout_marginTop="16dp" />
+
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/categoryLabel"
+        android:layout_marginTop="8dp" />
+
+    <!-- Description Label and Input -->
+    <TextView
+        android:id="@+id/descriptionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description:"
+        android:layout_below="@id/categorySpinner"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/descriptionInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/descriptionLabel"
+        android:layout_marginTop="8dp"
+        android:hint="Enter description"
+        android:inputType="textMultiLine"
+        android:lines="4" />
+
+    <!-- Add Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/addButton"
+        style="@style/RedButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/descriptionInput"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="29dp"
+        android:text="Submit" />
+
+</RelativeLayout>
