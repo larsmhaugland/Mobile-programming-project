@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.widget.*
 import android.content.Context
 import android.content.Intent
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,11 +15,11 @@ import android.view.ViewGroup
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
-data class ShoppingCartItem(val name: String, var amount: Int)
+import java.io.Serializable
 
-var shoppingCart = mutableListOf<ShoppingCartItem>()
-
-
+data class ShoppingCartItem(val name: String, var amount: Int) : Serializable
+// Need shoppingCart to be global, so that it can be accessed from the adapter
+private var shoppingCart = ArrayList<ShoppingCartItem>()
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
@@ -25,8 +27,6 @@ class ShopActivity : AppCompatActivity(){
     private lateinit var adapter: FlagAdapter
     private lateinit var editTextSearch: EditText
     private var isReverseSort = false
-    private var shoppingCart = listOf<ShoppingCartItem>()
-
 
 
     private fun sortAlphabetically(items: List<Flag>): List<Flag> {
@@ -117,6 +117,11 @@ class ShopActivity : AppCompatActivity(){
         val checkOut = findViewById<Button>(R.id.checkoutButton)
         checkOut.setOnClickListener {
             val intent= Intent(this,CheckoutActivity::class.java)
+            intent.putExtra("username",username)
+            val shoppingCartNames = shoppingCart.map { it.name }
+            intent.putExtra("shoppingCartNames", shoppingCartNames.toTypedArray())
+            val shoppingCartAmounts = shoppingCart.map { it.amount }
+            intent.putExtra("shoppingCartAmounts", shoppingCartAmounts.toIntArray())
             startActivity(intent)
 
         }

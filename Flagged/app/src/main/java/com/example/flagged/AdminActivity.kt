@@ -10,8 +10,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
-import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 class AdminActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
@@ -19,6 +17,13 @@ class AdminActivity : AppCompatActivity(){
     private lateinit var filteredFlagItems : List<Flag>
     private lateinit var adapter: FlagAdapterAdmin
     private lateinit var editTextSearch: EditText
+    override fun onResume() {
+        super.onResume()
+        val db = FirestoreDB()
+        flagItems = db.getFlags()
+        adapter = FlagAdapterAdmin(this, flagItems)
+        flagListView.adapter = adapter
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin)
@@ -70,7 +75,8 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
         if (itemView == null) {
-            itemView = LayoutInflater.from(context).inflate(R.layout.activity_admin_list, parent, false)
+            itemView =
+                LayoutInflater.from(context).inflate(R.layout.activity_admin_list, parent, false)
         }
 
         val flagNameTextView = itemView?.findViewById<TextView>(R.id.itemName)
@@ -81,9 +87,18 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
 
         val currentFlagItem = getItem(position)
 
-
+        itemView?.findViewById<Button>(R.id.editFlagButton)?.setOnClickListener() {
+            val intent = Intent(context, EditFlagActivity::class.java)
+            intent.putExtra("flagName", currentFlagItem?.name)
+            intent.putExtra("flagPrice", currentFlagItem?.price)
+            intent.putExtra("flagStock", currentFlagItem?.stock)
+            intent.putExtra("flagDescription", currentFlagItem?.description)
+            intent.putExtra("flagCategory", currentFlagItem?.category)
+            context.startActivity(intent)
+        }
         flagNameTextView?.text = currentFlagItem?.name
-        val image = context.resources.getIdentifier(currentFlagItem?.image, "drawable", context.packageName)
+        val image =
+            context.resources.getIdentifier(currentFlagItem?.image, "drawable", context.packageName)
         flagImageView?.setImageResource(image ?: 0)
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
         flagStockTextView?.text = "Stock:" + currentFlagItem?.stock.toString()

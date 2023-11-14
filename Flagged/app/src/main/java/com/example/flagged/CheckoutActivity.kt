@@ -6,12 +6,25 @@ import android.os.Bundle
 import android.widget.*
 import org.w3c.dom.Text
 
+data class ShoppingItem(
+    val name: String,
+    val quantity: Int,
+    val price: Double
+)
 class CheckoutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
 
+        val shoppingItemNames = intent.getStringArrayExtra("shoppingCartNames")
+        val shoppingItemAmounts = intent.getIntArrayExtra("shoppingCartAmounts")
+
         val db = FirestoreDB()
+
+        var shoppingCart = db.getFlags().filter { item ->
+            item.name in (shoppingItemNames?.asIterable() ?: emptyList())
+        }
+
 
         val nameInput = findViewById<EditText>(R.id.checkoutName)
         val addressInput = findViewById<EditText>(R.id.checkoutAddress)
@@ -36,3 +49,6 @@ class CheckoutActivity : AppCompatActivity() {
         }
     }
 }
+
+
+class CheckOutAdapter

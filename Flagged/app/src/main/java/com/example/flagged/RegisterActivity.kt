@@ -8,6 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 
 class RegisterActivity : AppCompatActivity()  {
+    override fun onResume() {
+        super.onResume()
+        val usernameInput = findViewById<EditText>(R.id.usernameEditText)
+        val passwordInput = findViewById<EditText>(R.id.passwordEditText)
+        val emailInput = findViewById<EditText>(R.id.emailEditText)
+        usernameInput.setText("")
+        passwordInput.setText("")
+        emailInput.setText("")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)

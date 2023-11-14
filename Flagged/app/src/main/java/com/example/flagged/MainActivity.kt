@@ -8,6 +8,13 @@ import android.widget.EditText
 import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
+    override fun onResume() {
+        super.onResume()
+        val usernameInput = findViewById<EditText>(R.id.usernameEditText)
+        val passwordInput = findViewById<EditText>(R.id.passwordEditText)
+        usernameInput.setText("")
+        passwordInput.setText("")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

@@ -112,6 +112,18 @@ class FirestoreDB {
         return success
     }
 
+    fun patchFlag(flag : Flag) : Boolean {
+        return try{
+            db.collection("flags")
+                .document(flag.name)
+                .update("stock", flag.stock, "price", flag.price, "description", flag.description, "category", flag.category)
+            true
+        } catch (e: Exception) {
+            println("Error patching flag: $e")
+            false
+        }
+    }
+
     fun deleteFlag(flag : Flag) : Boolean{
         var success : Boolean
         runBlocking {

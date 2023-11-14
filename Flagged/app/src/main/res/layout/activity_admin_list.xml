@@ -57,7 +57,7 @@
 
     <!-- Add to Cart Button -->
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/addToCartButton"
+        android:id="@+id/editFlagButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Edit"

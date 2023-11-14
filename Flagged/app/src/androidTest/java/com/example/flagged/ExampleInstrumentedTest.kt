@@ -29,7 +29,7 @@ class ExampleInstrumentedTest {
             username = "test",
             password = "test",
             email = "test@test.com",
-            favouriteFlags = listOf()
+            favouriteFlags = arrayListOf()
         )
         val result = db.addUser(user)
         assertEquals(true, result.isSuccess)
