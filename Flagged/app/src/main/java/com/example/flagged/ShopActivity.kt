@@ -17,9 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import java.io.Serializable
 
-data class ShoppingCartItem(val name: String, var amount: Int) : Serializable
-// Need shoppingCart to be global, so that it can be accessed from the adapter
-private var shoppingCart = ArrayList<ShoppingCartItem>()
+var Username = ""
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
@@ -117,11 +115,7 @@ class ShopActivity : AppCompatActivity(){
         val checkOut = findViewById<Button>(R.id.checkoutButton)
         checkOut.setOnClickListener {
             val intent= Intent(this,CheckoutActivity::class.java)
-            intent.putExtra("username",username)
-            val shoppingCartNames = shoppingCart.map { it.name }
-            intent.putExtra("shoppingCartNames", shoppingCartNames.toTypedArray())
-            val shoppingCartAmounts = shoppingCart.map { it.amount }
-            intent.putExtra("shoppingCartAmounts", shoppingCartAmounts.toIntArray())
+            Username = username.toString()
             startActivity(intent)
 
         }
@@ -223,18 +217,10 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagAddToCart?.setOnClickListener(){
             val db = FirestoreDB()
             if (currentFlagItem != null) {
-                if(db.updateStock(currentFlagItem.name,1) != ""){
-                    var flag = shoppingCart.find(){it.name === currentFlagItem.name}
-                    if(flag === null){
-                        flag = ShoppingCartItem(
-                            currentFlagItem.name,
-                            1
-                        )
-                        shoppingCart.add(flag)
-                    } else {
-                        flag.amount += 1
-                        shoppingCart[shoppingCart.indexOf(flag)] = flag
-                    }
+                if(db.updateStock(currentFlagItem.name,1) && db.addToCart(username!!,currentFlagItem.name)){
+                    Toast.makeText(context, "Flag added to cart", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }
             }
         }

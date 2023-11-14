@@ -15,9 +15,10 @@
 
     <!-- Total cost text -->
     <TextView
+        android:id="@+id/checkoutTotalCost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Total Cost:"
+        android:text=""
         android:textSize="18sp"
         android:layout_marginTop="16dp"/>
 

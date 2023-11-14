@@ -5,11 +5,16 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import java.io.Serializable
 import java.security.MessageDigest
 
 data class Flag(val name : String, var stock : Int, var price : Int, val description : String, val image : String, val category : String)
-data class User(val username : String, var password : String, val email : String, var favouriteFlags : ArrayList<String>)
-
+data class User(val username : String = "",
+                var password : String = "",
+                val email : String = "",
+                var favouriteFlags : ArrayList<String> = ArrayList(),
+                var cart : ArrayList<ShoppingCartItem> = ArrayList())
+data class ShoppingCartItem(val name: String = "", var amount: Int = 0, var price: Int = 0)
 class FirestoreDB {
     private val flags: MutableList<Flag> = mutableListOf()
     private val users: MutableList<User> = mutableListOf()
@@ -67,11 +72,11 @@ class FirestoreDB {
         return success
     }
 
-    fun updateStock(name: String, amount: Int) : String {
-        val flag = flags.find { it.name == name } ?: return "Flag not found"
+    fun updateStock(name: String, amount: Int) : Boolean {
+        val flag = flags.find { it.name == name } ?: return false
 
         if ((flag.stock + amount) < 0) {
-            return "Not enough stock"
+            return false
         }
 
         return runBlocking {
@@ -81,10 +86,10 @@ class FirestoreDB {
                     .document(name)
                     .set(flag)
                     .await()
-                ""
+                true
             } catch (e: Exception) {
                 println("Error updating stock: $e")
-                e.toString()
+                false
             }
         }
     }
@@ -154,12 +159,21 @@ class FirestoreDB {
                 for (document in data!!) {
                     if (document.id == "placeholder")
                         continue
+                    /*
                     val user = User(
                         username = document.id,
                         password = document.data["password"]!!.toString(),
                         email = document.data["email"]!!.toString(),
-                        favouriteFlags = (document.data["favouriteFlags"] as List<String>).toCollection(ArrayList())
-                    )
+                        favouriteFlags = (document.data["favouriteFlags"] as List<String>).toCollection(ArrayList()),
+                        cart = (document.data["cart"] as List<ShoppingCartItem>).toCollection(ArrayList())
+                    )*/
+
+                    val user: User = document.toObject(User::class.java)
+
+                    if (user == null){
+                        println("User is null")
+                        continue
+                    }
 
                     users.add(user)
                 }
@@ -193,19 +207,34 @@ class FirestoreDB {
         return result
     }
 
+    fun addToCart(username: String, flag: String) : Boolean {
+        val user = users.find { it.username == username } ?: return false
+        if (user.cart.find { it.name == flag } == null) {
+            user.cart.add(ShoppingCartItem(flag, 1, flags.find { it.name == flag }?.price ?: 0))
+            return patchUser(user)
+        }
+        user.cart.find { it.name == flag }?.let {
+            it.amount++
+            return patchUser(user)
+        }
+        return false
+    }
+
+    fun getCart(username: String) : ArrayList<ShoppingCartItem> {
+        val user = users.find { it.username == username } ?: return ArrayList()
+        return user.cart
+    }
     fun patchUser(user: User) : Boolean {
-        var success : Boolean
-        success = try{
+        return try{
             db.collection("users")
                 .document(user.username)
-                .update("favouriteFlags", user.favouriteFlags)
+                .update("favouriteFlags", user.favouriteFlags, "cart", user.cart)
             println("User patched")
             true
         } catch (e: Exception) {
             println("Error patching user: $e")
             false
         }
-        return success
     }
     fun deleteUser(user: User) : Boolean{
         var success : Boolean

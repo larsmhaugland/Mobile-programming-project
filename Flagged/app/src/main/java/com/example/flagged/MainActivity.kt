@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
     override fun onResume() {
@@ -33,7 +34,9 @@ class MainActivity : AppCompatActivity() {
         submitButton.setOnClickListener {
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
+            db.getUsers()
             if(!db.authUser(username,password)){
+                Toast.makeText(applicationContext, "Wrong username or password!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             if(username == "admin"){
