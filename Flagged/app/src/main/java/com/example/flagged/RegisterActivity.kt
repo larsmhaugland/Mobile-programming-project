@@ -21,7 +21,7 @@ class RegisterActivity : AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
         val users = db.getUsers()
         val registerText = findViewById<TextView>(R.id.registerTextView)
         val usernameInput = findViewById<EditText>(R.id.usernameEditText)

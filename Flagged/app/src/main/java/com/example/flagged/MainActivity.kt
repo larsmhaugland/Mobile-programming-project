@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         val registerButton = findViewById<TextView>(R.id.signUpTextView)
         val usernameInput = findViewById<EditText>(R.id.usernameEditText)
         val passwordInput = findViewById<EditText>(R.id.passwordEditText)
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
 
         registerButton.setOnClickListener {
             val intent= Intent(this,RegisterActivity::class.java)
@@ -32,9 +32,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         submitButton.setOnClickListener {
+            val startTime = System.currentTimeMillis()
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
-            db.getUsers()
             if(!db.authUser(username,password)){
                 Toast.makeText(applicationContext, "Wrong username or password!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             }else{
             val intent= Intent(this,ShopActivity::class.java)
             intent.putExtra("username",username)
+            println("Login time taken: ${System.currentTimeMillis() - startTime}ms")
             startActivity(intent)
             }
         }

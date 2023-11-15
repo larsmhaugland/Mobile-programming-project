@@ -13,7 +13,7 @@ class AddFlagActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_flag)
 
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
 
         val flagNameInput = findViewById<EditText>(R.id.nameInput)
         val flagPriceInput = findViewById<EditText>(R.id.priceInput)

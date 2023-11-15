@@ -10,7 +10,7 @@ class FavouritesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
 
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
         val username = intent.getStringExtra("username")
 
         val user = db.getUsers().find { it.username == username }

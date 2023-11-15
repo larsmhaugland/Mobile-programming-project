@@ -98,9 +98,9 @@ class ShopActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
+        val startTime = System.currentTimeMillis()
         val username = intent.getStringExtra("username")
-        val db = FirestoreDB()
-
+        val db = FirestoreDB.getInstance()
         editTextSearch = findViewById(R.id.searchField)
         flagListView = findViewById(R.id.itemListView)
 
@@ -155,6 +155,7 @@ class ShopActivity : AppCompatActivity(){
             override fun afterTextChanged(s: Editable?) {
             }
         })
+        println("Shop time taken: ${System.currentTimeMillis() - startTime}ms")
     }
 }
 
@@ -174,11 +175,27 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         val flagDescriptionTextView = itemView?.findViewById<TextView>(R.id.itemDescription)
         val favouriteButton = itemView?.findViewById<AppCompatButton>(R.id.favouriteButton)
         val flagAddToCart = itemView?.findViewById<AppCompatButton>(R.id.addToCartButton)
+        val flagCartLayout = itemView?.findViewById<LinearLayout>(R.id.cartControlsLayout)
+        val flagMinusButton = itemView?.findViewById<AppCompatButton>(R.id.minusButton)
+        val flagNumberText = itemView?.findViewById<TextView>(R.id.cartItemAmount)
+        val flagPlusButton = itemView?.findViewById<AppCompatButton>(R.id.plusButton)
 
         val currentFlagItem = getItem(position)
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
         val username = intent.getStringExtra("username")
         val user = db.getUsers().find { it.username == username }
+
+        if (user != null) {
+            if (user.cart.find { it.name == currentFlagItem?.name } != null) {
+                flagAddToCart?.visibility = View.GONE
+                flagCartLayout?.visibility = View.VISIBLE
+                val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem?.name }?.amount
+                flagNumberText?.text = amount.toString()
+            } else {
+                flagAddToCart?.visibility = View.VISIBLE
+                flagCartLayout?.visibility = View.GONE
+            }
+        }
 
         favouriteButton?.setOnClickListener {
             Log.e("Username", "$username", )
@@ -207,18 +224,47 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
         flagDescriptionTextView?.text = currentFlagItem?.description
         if(user !=null){
-        if(user.favouriteFlags.contains(currentFlagItem?.name)){
-            favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
-        } else {
-            favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
-        }
+            if(user.favouriteFlags.contains(currentFlagItem?.name)){
+                favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
+            } else {
+                favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
+            }
         }
 
         flagAddToCart?.setOnClickListener(){
-            val db = FirestoreDB()
             if (currentFlagItem != null) {
+                //Tries to update stock and add to cart
                 if(db.updateStock(currentFlagItem.name,1) && db.addToCart(username!!,currentFlagItem.name)){
-                    Toast.makeText(context, "Flag added to cart", Toast.LENGTH_SHORT).show()
+                    flagAddToCart.visibility = View.GONE
+                    flagCartLayout?.visibility = View.VISIBLE
+                    val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
+                    flagNumberText?.text = amount.toString()
+                } else {
+                    Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        flagMinusButton?.setOnClickListener(){
+            if (currentFlagItem != null) {
+                //Tries to update stock and add to cart
+                if(db.updateStock(currentFlagItem.name,-1) && db.removeFromCart(username!!,currentFlagItem.name)){
+                    val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
+                    flagNumberText?.text = amount.toString()
+                    if(amount == 0 || amount == null){
+                        flagCartLayout?.visibility = View.GONE
+                        flagAddToCart?.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+
+        flagPlusButton?.setOnClickListener(){
+            if (currentFlagItem != null) {
+                //Tries to update stock and add to cart
+                if(db.updateStock(currentFlagItem.name,1) && db.addToCart(username!!,currentFlagItem.name)){
+                    val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
+                    flagNumberText?.text = amount.toString()
                 } else {
                     Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }

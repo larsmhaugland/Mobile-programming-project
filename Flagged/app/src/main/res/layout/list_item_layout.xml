@@ -67,4 +67,37 @@
         android:paddingStart="8dp"
         style="@style/RedButton"
         />
+
+    <!-- Cart Controls -->
+    <LinearLayout
+        android:id="@+id/cartControlsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/itemDescription"
+        android:layout_alignEnd="@+id/itemDescription"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <!-- Minus Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/minusButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            style="@style/MinusButtonStyle"/>
+
+        <!-- Cart Item Amount -->
+        <TextView
+            android:id="@+id/cartItemAmount"
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="0"/>
+
+        <!-- Plus Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/plusButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            style="@style/PlusButtonStyle"/>
+    </LinearLayout>
 </RelativeLayout>

@@ -12,7 +12,7 @@ class EditFlagActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_flag)
 
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
 
         var name = intent.getStringExtra("flagName") ?: ""
         var description = intent.getStringExtra("flagDescription") ?: ""

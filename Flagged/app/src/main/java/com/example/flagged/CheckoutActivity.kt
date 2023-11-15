@@ -9,12 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.AppCompatButton
+import org.w3c.dom.Text
 
 class CheckoutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
 
         val user = db.getUsers().find { it.username == Username }
         val shoppingCartList: ArrayList<ShoppingCartItem> = user?.cart ?: ArrayList()
@@ -36,9 +37,9 @@ class CheckoutActivity : AppCompatActivity() {
 
         val submitButton = findViewById<Button>(R.id.submitOrderButton)
 
-        val totalCost = findViewById<TextView>(R.id.checkoutTotalCost)
-        val tCostText = "Total cost: $" + shoppingCartList.sumOf { it.amount * it.price }
-        totalCost.text = tCostText
+        updateTotalCost()
+
+
 
         submitButton.setOnClickListener {
 
@@ -52,11 +53,22 @@ class CheckoutActivity : AppCompatActivity() {
             startActivity(intent)
             if (user != null) {
                 user.cart.clear()
+                updateTotalCost()
                 db.patchUser(user)
             }
             finish()
         }
     }
+    fun updateTotalCost() {
+        val totalCostView = findViewById<TextView>(R.id.checkoutTotalCost)
+        val db = FirestoreDB.getInstance()
+        val tCost = db.getUsers().find{it.username == Username}?.cart?.sumOf { it.amount * it.price } ?: 0
+        val tCostText = "Total cost: $" + tCost
+        totalCostView.text = tCostText
+
+    }
+
+
 }
 
 
@@ -86,19 +98,22 @@ class ShoppingCartAdapter(private val context: Context, private val itemList: Ar
         priceTextView.text = pText
 
         removeFromCartButton.setOnClickListener() {
-            val db = FirestoreDB()
+            val db = FirestoreDB.getInstance()
 
 
             val user = db.getUsers().find { it.username == Username }
+            db.updateStock(item.name, item.amount)
             //Remove item from users cart:
             if (user != null) {
                 user.cart.remove(item)
                 db.patchUser(user)
+                (context as CheckoutActivity).updateTotalCost()
             }
+
             //Remove item from view:
             itemList.remove(item)
             notifyDataSetChanged()
-            Toast.makeText(context, "Flag removed from cart", Toast.LENGTH_SHORT).show()
+
         }
 
         return view

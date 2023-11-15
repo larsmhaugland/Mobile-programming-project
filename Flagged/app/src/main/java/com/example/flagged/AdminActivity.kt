@@ -19,7 +19,7 @@ class AdminActivity : AppCompatActivity(){
     private lateinit var editTextSearch: EditText
     override fun onResume() {
         super.onResume()
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
         flagItems = db.getFlags()
         adapter = FlagAdapterAdmin(this, flagItems)
         flagListView.adapter = adapter
@@ -27,7 +27,7 @@ class AdminActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin)
-        val db = FirestoreDB()
+        val db = FirestoreDB.getInstance()
 
         editTextSearch = findViewById(R.id.searchField)
         flagListView = findViewById(R.id.itemListView)
