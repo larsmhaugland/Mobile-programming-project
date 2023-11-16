@@ -22,12 +22,18 @@ class MainActivity : AppCompatActivity() {
 
         val submitButton = findViewById<Button>(R.id.submitButton)
         val registerButton = findViewById<TextView>(R.id.signUpTextView)
+        val changePasswordButton = findViewById<TextView>(R.id.changePasswordTextView)
         val usernameInput = findViewById<EditText>(R.id.usernameEditText)
         val passwordInput = findViewById<EditText>(R.id.passwordEditText)
         val db = FirestoreDB.getInstance()
 
         registerButton.setOnClickListener {
             val intent= Intent(this,RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
+        changePasswordButton.setOnClickListener {
+            val intent= Intent(this,ChangePasswordActivity::class.java)
             startActivity(intent)
         }
 

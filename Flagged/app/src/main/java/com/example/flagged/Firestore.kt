@@ -8,8 +8,7 @@ import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 
 
-//val db = FirestoreDB()      //Database instance shared by all activities
-val HASHITERATIONS = 5000   //Iterate hash 5000 times
+val HASHITERATIONS = 2   //Iterate hash 2 times
 val pepper = "pepper".toByteArray(Charsets.UTF_8) //Pepper is a salt for hashing that is not stored in the database and is the same for all users
 data class Flag(val name : String, var stock : Int, var price : Int, val description : String, val image : String, val category : String)
 data class User(val username : String = "",
@@ -244,7 +243,7 @@ class FirestoreDB private constructor(){
         return try{
             db.collection("users")
                 .document(user.username)
-                .update("favouriteFlags", user.favouriteFlags, "cart", user.cart)
+                .update("password", user.password,"favouriteFlags", user.favouriteFlags, "cart", user.cart)
             users.find { it.username == user.username }?.let {
                 it.favouriteFlags = user.favouriteFlags
                 it.cart = user.cart
@@ -276,16 +275,20 @@ class FirestoreDB private constructor(){
 
     fun authUser(username: String, password: String) : Boolean {
         for (user in users) {
-/*
-            if (user.username == username) {
-                user.password = hashPassword(password, user)
-                return patchUser(user)
-            }*/
             if (user.username == username && user.password == hashPassword(password, user)) {
                 return true
             }
         }
         return false
+    }
+
+    fun changePassword(username: String, oldPassword: String, newPassword: String) : Boolean {
+        val user = users.find { it.username == username } ?: return false
+        if (user.password != hashPassword(oldPassword, user)) {
+            return false
+        }
+        user.password = hashPassword(newPassword, user)
+        return patchUser(user)
     }
 
     private fun hashPassword(password: String, user : User) : String {
