@@ -95,6 +95,16 @@ class ShopActivity : AppCompatActivity(){
         dialog.show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        val db = FirestoreDB.getInstance()
+        flagItems = db.getFlags()
+        filteredFlagItems = flagItems
+
+        adapter = FlagAdapter(this, flagItems, intent)
+        flagListView.adapter = adapter
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
@@ -233,41 +243,117 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
 
         flagAddToCart?.setOnClickListener(){
             if (currentFlagItem != null) {
+
+
+                val startTime = System.currentTimeMillis()
+                var elapsed : Long
+                var delta : Long
+
+
+
                 //Tries to update stock and add to cart
                 if(db.updateStock(currentFlagItem.name,1) && db.addToCart(username!!,currentFlagItem.name)){
                     flagAddToCart.visibility = View.GONE
                     flagCartLayout?.visibility = View.VISIBLE
+
+
+                    elapsed = System.currentTimeMillis() - startTime
+                    //println("Time taken updateStock: ${elapsed}ms")
+                    delta = System.currentTimeMillis()
+
+
                     val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
+
+
+                    elapsed = System.currentTimeMillis() - delta
+                    //println("Time taken amount: ${elapsed}ms")
+
+
                     flagNumberText?.text = amount.toString()
                 } else {
                     Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }
+
+
+                elapsed = System.currentTimeMillis() - startTime
+                println("Total time taken: ${elapsed}ms")
+
+
             }
         }
 
         flagMinusButton?.setOnClickListener(){
             if (currentFlagItem != null) {
+                val startTime = System.currentTimeMillis()
+                var elapsed : Long
+                var delta : Long
                 //Tries to update stock and add to cart
                 if(db.updateStock(currentFlagItem.name,-1) && db.removeFromCart(username!!,currentFlagItem.name)){
+
+
+                    elapsed = System.currentTimeMillis() - startTime
+                    //println("Time taken updateStock: ${elapsed}ms")
+                    delta = System.currentTimeMillis()
+
+
                     val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
                     flagNumberText?.text = amount.toString()
                     if(amount == 0 || amount == null){
                         flagCartLayout?.visibility = View.GONE
                         flagAddToCart?.visibility = View.VISIBLE
                     }
+
+
+                    elapsed = System.currentTimeMillis() - delta
+                    //println("Time taken amount: ${elapsed}ms")
+
+
                 }
+
+
+                elapsed = System.currentTimeMillis() - startTime
+                println("Total time taken: ${elapsed}ms")
+
+
             }
         }
 
         flagPlusButton?.setOnClickListener(){
             if (currentFlagItem != null) {
+
+
+                val startTime = System.currentTimeMillis()
+                var delta : Long
+                var elapsed : Long
+
+
                 //Tries to update stock and add to cart
                 if(db.updateStock(currentFlagItem.name,1) && db.addToCart(username!!,currentFlagItem.name)){
+
+
+
+                    elapsed = System.currentTimeMillis() - startTime
+                    //println("Time taken updateStock: ${elapsed}ms")
+                    delta = System.currentTimeMillis()
+
+
                     val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
+
+
+                    elapsed = System.currentTimeMillis() - delta
+                    //println("Time taken amount: ${elapsed}ms")
+
+
                     flagNumberText?.text = amount.toString()
                 } else {
                     Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }
+
+
+                elapsed = System.currentTimeMillis() - startTime
+                println("Total time taken: ${elapsed}ms")
+
+
             }
         }
 
