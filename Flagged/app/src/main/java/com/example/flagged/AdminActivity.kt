@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.*
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 class AdminActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
@@ -104,7 +106,50 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
         flagStockTextView?.text = "Stock:" + currentFlagItem?.stock.toString()
         flagDescriptionTextView?.text = currentFlagItem?.description
 
+        val db = FirestoreDB.getInstance()
+
+        val deleteButton = itemView?.findViewById<AppCompatButton>(R.id.deleteButton)
+        deleteButton?.setOnClickListener {
+            showConfirmationDialog(object : FlagAdapterAdmin.ConfirmationCallback {
+                override fun onConfirmed() {
+                    // User clicked Yes, perform the deletion
+                    db.deleteFlag(currentFlagItem!!)
+                    notifyDataSetChanged()
+                }
+
+                override fun onCancelled() {
+                    // User clicked No or dismissed the dialog
+                    // No need to do anything
+                }
+            })
+        }
 
         return itemView!!
     }
+    private fun showConfirmationDialog(callback: ConfirmationCallback) {
+        val builder = AlertDialog.Builder(context)
+
+        builder.setTitle("Confirm Deletion")
+            .setMessage("Are you sure you want to delete the flag?")
+            .setPositiveButton("Yes") { dialog: DialogInterface, _: Int ->
+                // User clicked Yes, perform the deletion
+                callback.onConfirmed()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog: DialogInterface, _: Int ->
+                // User clicked No, do nothing or handle accordingly
+                callback.onCancelled()
+                dialog.dismiss()
+            }
+
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.show()
+
+    }
+
+    interface ConfirmationCallback {
+        fun onConfirmed()
+        fun onCancelled()
+    }
+
 }
