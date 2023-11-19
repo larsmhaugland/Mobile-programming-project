@@ -14,6 +14,7 @@ import androidx.appcompat.widget.AppCompatButton
 class AdminActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
+    private lateinit var filteredFlagItems : List<Flag>
     private lateinit var adapter: FlagAdapterAdmin
     private lateinit var editTextSearch: EditText
     override fun onResume() {
@@ -77,7 +78,7 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
             itemView =
                 LayoutInflater.from(context).inflate(R.layout.activity_admin_list, parent, false)
         }
-        val db = FirestoreDB.getInstance()
+
         val flagNameTextView = itemView?.findViewById<TextView>(R.id.itemName)
         val flagImageView = itemView?.findViewById<ImageView>(R.id.itemImage)
         val flagPriceTextView = itemView?.findViewById<TextView>(R.id.itemPrice)
@@ -102,15 +103,6 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
         flagStockTextView?.text = "Stock:" + currentFlagItem?.stock.toString()
         flagDescriptionTextView?.text = currentFlagItem?.description
-
-        val editFlagButton = itemView?.findViewById<AppCompatButton>(R.id.editFlagButton)
-        editFlagButton?.setOnClickListener {
-            val intent = Intent(context, EditFlagActivity::class.java)
-            intent.putExtra("flagName", currentFlagItem?.name)
-            context.startActivity(intent)
-        }
-
-
 
 
         return itemView!!
