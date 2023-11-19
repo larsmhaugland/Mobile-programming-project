@@ -55,6 +55,7 @@ class ShopActivity : AppCompatActivity(){
         val categoryNavalRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryNaval)
         val categoryLimitedEditionRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryLimitedEdition)
         val categoryLGBTQRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryLGBTQ)
+        val categoryCountyCityRadioButton = dialogView.findViewById<RadioButton>(R.id.categoryCountyCity)
 
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
@@ -80,6 +81,8 @@ class ShopActivity : AppCompatActivity(){
                     filteredFlagItems = filterByCategory(flagItems,"Limited Edition")
                 } else if (categoryLGBTQRadioButton.isChecked) {
                     filteredFlagItems = filterByCategory(flagItems, "LGBTQ+")
+                }else if (categoryCountyCityRadioButton.isChecked){
+                    filteredFlagItems = filterByCategory(flagItems,"County/City")
                 }
 
                 val newAdapter = FlagAdapter(this@ShopActivity, filteredFlagItems, intent)

@@ -27,7 +27,6 @@ class AddFlagActivity : AppCompatActivity() {
         flagCategoryInput.adapter = adapter
 
         val addButton = findViewById<AppCompatButton>(R.id.addButton)
-
         addButton.setOnClickListener{
             val name = flagNameInput.text.toString()
             val price = flagPriceInput.text.toString().toIntOrNull() ?: 0
@@ -41,7 +40,7 @@ class AddFlagActivity : AppCompatActivity() {
                 stock = stock,
                 description = description,
                 category = category,
-                image = name.lowercase()
+                image = name.lowercase(),
             )
             db.addFlag(flag)
             finish()

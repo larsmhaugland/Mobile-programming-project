@@ -75,5 +75,11 @@
         android:layout_height="wrap_content"
         android:text="LGBTQ+"
         android:id="@+id/categoryLGBTQ" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="County/City"
+        android:id="@+id/categoryCountyCity" />
 </RadioGroup>
 </LinearLayout>
