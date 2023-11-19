@@ -10,7 +10,7 @@ class EditFlagActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_flag)
-        val flagName = intent.getStringExtra("flagname");
+        val flagName = intent.getStringExtra("flagName");
 
         var checkStock = findViewById<CheckBox>(R.id.checkStock)
         var checkPrice = findViewById<CheckBox>(R.id.checkPrice)

@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 class AdminActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
@@ -109,9 +110,22 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
             intent.putExtra("flagName", currentFlagItem?.name)
             context.startActivity(intent)
         }
-
-
-
+        val deleteFlagButton = itemView?.findViewById<AppCompatButton>(R.id.deleteButton)
+        deleteFlagButton?.setOnClickListener{
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Delete Flag")
+            builder.setMessage("Are you sure you want to delete this flag?")
+            builder.setPositiveButton("Yes") { _, _ ->
+                if(currentFlagItem != null){
+                    db.deleteFlag(currentFlagItem)
+                    flagItems.toMutableList().remove(currentFlagItem)
+                    notifyDataSetChanged()
+                }
+            }
+            builder.setNegativeButton("No") { _, _ ->
+            }
+            builder.show()
+        }
 
         return itemView!!
     }
