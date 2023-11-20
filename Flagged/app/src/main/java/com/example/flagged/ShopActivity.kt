@@ -43,6 +43,10 @@ class ShopActivity : AppCompatActivity(){
         return items.filter { it.category == category }
     }
 
+    /**
+     *      Filter pop-up dialog
+     *      Allows the user to filter the flags by category or sort them by name or price
+     * */
     private fun showFilterDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.filter_options, null)
 
@@ -98,6 +102,9 @@ class ShopActivity : AppCompatActivity(){
         dialog.show()
     }
 
+    /**
+     *    On resume, the list of flags is updated
+     * */
     override fun onResume() {
         super.onResume()
         val db = FirestoreDB.getInstance()
@@ -108,6 +115,12 @@ class ShopActivity : AppCompatActivity(){
         flagListView.adapter = adapter
 
     }
+
+    /**
+     *  On create, the list of flags is retrieved from the database and displayed
+     *
+     *  @param savedInstanceState: the saved instance state of the activity
+     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
@@ -175,7 +188,15 @@ class ShopActivity : AppCompatActivity(){
 
 class FlagAdapter(context: Context, private val flagItems: List<Flag>, private val intent: Intent) :
     ArrayAdapter<Flag>(context, 0, flagItems) {
-
+/**
+ *    Get the view for each flag item in the list and populate the shop with them
+ *    Also handles the favourite button and the add to cart button
+ *
+ *    @param position: the position of the flag in the list
+ *    @param convertView: the view of the flag
+ *    @param parent: the parent view
+ *    @return: the view of the flag
+ * */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
         if (itemView == null) {
@@ -209,14 +230,16 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
                 flagCartLayout?.visibility = View.GONE
             }
         }
-
+        //Change the look of the favourite button depending on whether a flag is in the users favourites
         favouriteButton?.setOnClickListener {
             Log.e("Username", "$username", )
-            val flag = flagItems[position]
+            val flag = flagItems[position]          //Get the specific flag whose button is being pressed
             Log.e("Flag", "flag: $flag", )
             if (username != null) {
                 Log.d("User Patching", "Before: ${user?.favouriteFlags}")
                 if (user != null && flag != null) {
+                    //If the flag is already in the users favourites, remove it, otherwise add it
+                    //Change the drawable resource to reflect the change
                     if (user.favouriteFlags.contains(flag?.name)) {
                         user.favouriteFlags.remove(flag?.name)
                         favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
@@ -225,17 +248,19 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
                         favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
                         Log.e("Favourites", "added flag:" + flag.name, )
                     }
-                    db.patchUser(user)
+                    db.patchUser(user)      //Send the updated user data to the database
                 }
                 Log.d("User Patching", "After: ${user?.favouriteFlags}")
             }
         }
 
         flagNameTextView?.text = currentFlagItem?.name
+        //Get the specific flag image from the drawable folder
         val image = context.resources.getIdentifier(currentFlagItem?.image, "drawable", context.packageName)
         flagImageView?.setImageResource(image ?: 0)
         flagPriceTextView?.text = "$" + currentFlagItem?.price.toString()
         flagDescriptionTextView?.text = currentFlagItem?.description
+        //Set the favourites button when the view is originally created
         if(user !=null){
             if(user.favouriteFlags.contains(currentFlagItem?.name)){
                 favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
