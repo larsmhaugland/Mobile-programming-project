@@ -258,6 +258,7 @@ class FirestoreDB private constructor(){
                     it.cart = user.cart
                 }
             }
+            println("User patched")
             true
         } catch (e: Exception) {
             println("Error patching user: $e")

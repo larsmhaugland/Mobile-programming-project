@@ -215,7 +215,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         val currentFlagItem = getItem(position)
         val db = FirestoreDB.getInstance()
         val username = intent.getStringExtra("username")
-        val user = db.getUsers().find { it.username == username }
+        var user = db.getUsers().find { it.username == username }
 
         if (user != null) {
             if (user.cart.find { it.name == currentFlagItem?.name } != null) {
@@ -232,22 +232,24 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         favouriteButton?.setOnClickListener {
             Log.e("Username", "$username", )
             val flag = flagItems[position]          //Get the specific flag whose button is being pressed
-            Log.e("Flag", "flag: $flag", )
+            Log.d("Flag", "flag: $flag", )
             if (username != null) {
+                user = db.getUsers().find { it.username == username }   //Get the user from the database
                 Log.d("User Patching", "Before: ${user?.favouriteFlags}")
-                if (user != null) {
+                //if (user != null) {
                     //If the flag is already in the users favourites, remove it, otherwise add it
                     //Change the drawable resource to reflect the change
-                    if (user.favouriteFlags.contains(flag?.name)) {
-                        user.favouriteFlags.remove(flag?.name)
+                    if (user!!.favouriteFlags.contains(flag?.name)) {
+                        user!!.favouriteFlags.remove(flag?.name)
                         favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
                     } else {
-                        user.favouriteFlags.add(flag.name)
+                        user!!.favouriteFlags.add(flag.name)
                         favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
-                        Log.e("Favourites", "added flag:" + flag.name, )
+                        Log.d("Favourites", "added flag:" + flag.name, )
                     }
-                    db.patchUser(user)      //Send the updated user data to the database
-                }
+                    db.patchUser(user!!)      //Send the updated user data to the database
+                    println("Function finished")
+               // }
                 Log.d("User Patching", "After: ${user?.favouriteFlags}")
             }
         }
@@ -260,7 +262,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagDescriptionTextView?.text = currentFlagItem?.description
         //Set the favourites button when the view is originally created
         if(user !=null){
-            if(user.favouriteFlags.contains(currentFlagItem?.name)){
+            if(user!!.favouriteFlags.contains(currentFlagItem?.name)){
                 favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
             } else {
                 favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
