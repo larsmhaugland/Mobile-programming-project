@@ -9,6 +9,9 @@ import android.widget.TextView
 import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
+    /**
+     *  This function is called when the activity is resumed.
+     * */
     override fun onResume() {
         super.onResume()
         val usernameInput = findViewById<EditText>(R.id.usernameEditText)
@@ -16,10 +19,16 @@ class MainActivity : AppCompatActivity() {
         usernameInput.setText("")
         passwordInput.setText("")
     }
+
+    /**
+     *  This function is called when the activity is created.
+     *  @param savedInstanceState The saved instance state.
+     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Get the elements from the layout
         val submitButton = findViewById<Button>(R.id.submitButton)
         val registerButton = findViewById<TextView>(R.id.signUpTextView)
         val changePasswordButton = findViewById<TextView>(R.id.changePasswordTextView)
@@ -45,11 +54,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Wrong username or password!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            // If the user is admin, go to admin activity, else go to shop activity.
             if(username == "admin"){
                 val intent= Intent(this,AdminActivity::class.java)
                 startActivity(intent)
             }else{
             val intent= Intent(this,ShopActivity::class.java)
+                //Send the username to the next activity
             intent.putExtra("username",username)
             println("Login time taken: ${System.currentTimeMillis() - startTime}ms")
             startActivity(intent)

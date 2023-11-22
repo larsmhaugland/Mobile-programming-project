@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 
 class EditFlagActivity : AppCompatActivity() {
+    /**
+     *  This function is called when the activity is created.
+     *  @param savedInstanceState The saved instance state bundle.
+     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_flag)
@@ -30,10 +34,13 @@ class EditFlagActivity : AppCompatActivity() {
         val editCategory = findViewById<EditText>(R.id.editCategory)
         editCategory.setText(category)
 
+        // If the flag doesn't exist, create a new one
         var flag = db.getFlags().find { it.name == name }
         if (flag == null) {
-            flag = Flag(name, stock, price, description, "image", category)
+            flag = Flag(name, stock, price, description, name.lowercase(), category)
         }
+
+        // Save the flag to the database
         val saveButton = findViewById<AppCompatButton>(R.id.saveFlagButton)
         saveButton.setOnClickListener {
             name = editName.text.toString()
@@ -64,6 +71,10 @@ class EditFlagActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     *  This function shows a confirmation dialog to the user.
+     *  @param callback The callback to be called when the user confirms or cancels the deletion.
+     * */
     private fun showConfirmationDialog(callback: ConfirmationCallback) {
         val builder = AlertDialog.Builder(this)
 
