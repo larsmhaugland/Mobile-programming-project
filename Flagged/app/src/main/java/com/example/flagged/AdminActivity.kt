@@ -16,9 +16,11 @@ import androidx.appcompat.widget.AppCompatButton
 class AdminActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
-    private lateinit var filteredFlagItems : List<Flag>
     private lateinit var adapter: FlagAdapterAdmin
     private lateinit var editTextSearch: EditText
+    /**
+     *  This function is called when the activity is resumed.
+     * */
     override fun onResume() {
         super.onResume()
         val db = FirestoreDB.getInstance()
@@ -26,6 +28,10 @@ class AdminActivity : AppCompatActivity(){
         adapter = FlagAdapterAdmin(this, flagItems)
         flagListView.adapter = adapter
     }
+
+    /**
+     *  This function is called when the activity is created.
+     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin)
@@ -49,6 +55,12 @@ class AdminActivity : AppCompatActivity(){
         editTextSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
+            /** This function is called when the user types in the search field.
+            *  @param s The text in the search field.
+             *  @param start The start index of the text.
+             *  @param before The length of the text before the change.
+             *  @param count The length of the text after the change.
+            * */
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString()
                 val filteredFlagItems = mutableListOf<Flag>()
@@ -66,6 +78,10 @@ class AdminActivity : AppCompatActivity(){
                 val newAdapter = FlagAdapterAdmin(this@AdminActivity, filteredFlagItems)
                 flagListView.adapter = newAdapter
             }
+            /**
+             *  This function is called after the user types in the search field.
+             *  @param s Editable text in the search field.
+             * */
             override fun afterTextChanged(s: Editable?) {
             }
         })
@@ -74,6 +90,13 @@ class AdminActivity : AppCompatActivity(){
 class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
     ArrayAdapter<Flag>(context, 0, flagItems) {
 
+    /**
+     *  Get the view for each item in the list.
+     *  @param position The position of the item in the list.
+     *  @param convertView The view of the item.
+     *  @param parent The parent view.
+     *  @return The view of the item.
+     * */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
         if (itemView == null) {
@@ -126,6 +149,10 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
 
         return itemView!!
     }
+    /**
+     *  Show a confirmation dialog.
+     *  @param callback The callback to be called when the user confirms or cancels the deletion.
+     * */
     private fun showConfirmationDialog(callback: ConfirmationCallback) {
         val builder = AlertDialog.Builder(context)
 
