@@ -1,5 +1,6 @@
 package com.example.flagged
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,11 @@ class FavouritesActivity : AppCompatActivity() {
 
         val db = FirestoreDB.getInstance()
         val username = intent.getStringExtra("username")
+
+        val favouritesButton = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.favouritesButton)
+        favouritesButton.setOnClickListener{
+            finish()
+        }
 
         val user = db.getUsers().find { it.username == username }
         val flags = db.getFlags()
