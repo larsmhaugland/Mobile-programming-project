@@ -37,15 +37,15 @@ class FirestoreDB private constructor(){
 
 
     fun getFlags() : MutableList<Flag> {
-        flags.clear()
+        flags.clear() //Clear local list
         runBlocking {
             try {
+                //Fetch collection from database
                 val data = db.collection("flags")
                     .get()
-                    .await()
+                    .await()    //Wait for response
                 for (document in data!!) {
-                    if (document.id == "placeholder")
-                        continue
+                    //Convert each document to a flag object and add to local list
                     val flag = Flag(
                         name = document.id,
                         stock = document.data["stock"]!!.toString().toInt(),
@@ -63,17 +63,19 @@ class FirestoreDB private constructor(){
         return flags
     }
     fun addFlag(flag: Flag) : Boolean{
+        //Check if flag already is present in local list
         if (flags.contains(flag)) {
             return false
         }
         var success : Boolean
         runBlocking {
             success = try {
+                //Update collection in database
                 db.collection("flags")
                     .document(flag.name)
                     .set(flag)
                     .await()
-                println("Flag added")
+                //Add flag to local list
                 flags.add(flag)
                 true
             } catch (e: Exception) {
@@ -161,19 +163,18 @@ class FirestoreDB private constructor(){
     }
 
     fun getUsers() : MutableList<User> {
+        //Clear local list
         users.clear()
         runBlocking {
             try {
+                //Fetch collection from database
                 val data = db.collection("users")
                     .get()
-                    .await()
+                    .await()    //Wait for response
 
                 for (document in data!!) {
-                    if (document.id == "placeholder")
-                        continue
-
+                    //Convert each document to a user object and add to local list
                     val user: User = document.toObject(User::class.java)
-
                     users.add(user)
                 }
             } catch(e: Exception) {
@@ -182,6 +183,7 @@ class FirestoreDB private constructor(){
         }
         return users
     }
+
     fun addUser(user: User) : Result<Unit>{
         var result : Result<Unit>
         if (users.contains(user)) {
@@ -237,17 +239,24 @@ class FirestoreDB private constructor(){
         return false
     }
 
-    fun getCart(username: String) : ArrayList<ShoppingCartItem> {
-        return getUsers().find { it.username == username }?.cart ?: return ArrayList()
-    }
     fun patchUser(user: User) : Boolean {
         return try{
-            db.collection("users")
-                .document(user.username)
-                .update("password", user.password,"favouriteFlags", user.favouriteFlags, "cart", user.cart)
-            users.find { it.username == user.username }?.let {
-                it.favouriteFlags = user.favouriteFlags
-                it.cart = user.cart
+            runBlocking {
+                db.collection("users")
+                    .document(user.username)
+                    .update(
+                        "password",
+                        user.password,
+                        "favouriteFlags",
+                        user.favouriteFlags,
+                        "cart",
+                        user.cart
+                    )
+                    .await()
+                users.find { it.username == user.username }?.let {
+                    it.favouriteFlags = user.favouriteFlags
+                    it.cart = user.cart
+                }
             }
             true
         } catch (e: Exception) {
@@ -276,6 +285,7 @@ class FirestoreDB private constructor(){
 
     fun authUser(username: String, password: String) : Boolean {
         for (user in users) {
+            //If username matches, get hash of password and compare
             if (user.username == username && user.password == hashPassword(password, user)) {
                 return true
             }
@@ -298,6 +308,7 @@ class FirestoreDB private constructor(){
         val salt = user.username.toByteArray(Charsets.UTF_8)
         //Hash password with salt and pepper
         var hash : ByteArray = digest.digest(salt + password.toByteArray(Charsets.UTF_8) + pepper)
+        //Iterate hash
         for (i in 1..HASHITERATIONS) {
             hash = digest.digest(hash)
             digest.reset()

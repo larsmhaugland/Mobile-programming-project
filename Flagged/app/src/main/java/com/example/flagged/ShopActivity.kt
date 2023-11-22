@@ -72,12 +72,12 @@ class ShopActivity : AppCompatActivity(){
                     filteredFlagItems = sortReverseAlphabetically(flagItems)
                     isReverseSort = true
                 }else if (sortLowHighRadioButton.isChecked) {
-            filteredFlagItems = sortLowHighByPrice(flagItems)
-            isReverseSort = false
-            } else if (sortHighLowRadioButton.isChecked) {
-            filteredFlagItems = sortHighLowByPrice(flagItems)
-            isReverseSort = true
-            }else if (categoryCountryRadioButton.isChecked) {
+                    filteredFlagItems = sortLowHighByPrice(flagItems)
+                    isReverseSort = false
+                } else if (sortHighLowRadioButton.isChecked) {
+                    filteredFlagItems = sortHighLowByPrice(flagItems)
+                    isReverseSort = true
+                }else if (categoryCountryRadioButton.isChecked) {
                     filteredFlagItems = filterByCategory(flagItems,"Country")
                 } else if (categoryNavalRadioButton.isChecked) {
                     filteredFlagItems = filterByCategory(flagItems,"Naval")
@@ -135,7 +135,6 @@ class ShopActivity : AppCompatActivity(){
             val intent= Intent(this,FavouritesActivity::class.java)
             intent.putExtra("username",username)
             startActivity(intent)
-
         }
 
         val checkOut = findViewById<Button>(R.id.checkoutButton)
@@ -143,7 +142,6 @@ class ShopActivity : AppCompatActivity(){
             val intent= Intent(this,CheckoutActivity::class.java)
             Username = username.toString()
             startActivity(intent)
-
         }
 
         val filterButton = findViewById<Button>(R.id.filterButton)
@@ -237,7 +235,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
             Log.e("Flag", "flag: $flag", )
             if (username != null) {
                 Log.d("User Patching", "Before: ${user?.favouriteFlags}")
-                if (user != null && flag != null) {
+                if (user != null) {
                     //If the flag is already in the users favourites, remove it, otherwise add it
                     //Change the drawable resource to reflect the change
                     if (user.favouriteFlags.contains(flag?.name)) {
@@ -272,11 +270,17 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagAddToCart?.setOnClickListener(){
             if (currentFlagItem != null) {
                 //Tries to update stock and add to cart
-                if(db.updateStock(currentFlagItem.name,1) && db.addToCart(username!!,currentFlagItem.name)){
-                    flagAddToCart.visibility = View.GONE
-                    flagCartLayout?.visibility = View.VISIBLE
-                    val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
-                    flagNumberText?.text = amount.toString()
+                if(db.updateStock(currentFlagItem.name,1)){
+                    if (db.addToCart(username!!,currentFlagItem.name)) {
+                        //Update text on screen
+                        flagAddToCart.visibility = View.GONE
+                        flagCartLayout?.visibility = View.VISIBLE
+                        val amount = db.getUsers()
+                            .find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
+                        flagNumberText?.text = amount.toString()
+                    } else {
+                        Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }
@@ -287,8 +291,10 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
             if (currentFlagItem != null) {
                 //Tries to update stock and add to cart
                 if(db.updateStock(currentFlagItem.name,-1) && db.removeFromCart(username!!,currentFlagItem.name)){
+                    //Update text on screen
                     val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
                     flagNumberText?.text = amount.toString()
+                    //If amount is 0, hide cart controls and show add to cart button
                     if(amount == 0 || amount == null){
                         flagCartLayout?.visibility = View.GONE
                         flagAddToCart?.visibility = View.VISIBLE
@@ -300,9 +306,15 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagPlusButton?.setOnClickListener(){
             if (currentFlagItem != null) {
                 //Tries to update stock and add to cart
-                if(db.updateStock(currentFlagItem.name,1) && db.addToCart(username!!,currentFlagItem.name)){
-                    val amount = db.getUsers().find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
-                    flagNumberText?.text = amount.toString()
+                if(db.updateStock(currentFlagItem.name,1)){
+                    if (db.addToCart(username!!,currentFlagItem.name)) {
+                        //Update text on screen
+                        val amount = db.getUsers()
+                            .find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
+                        flagNumberText?.text = amount.toString()
+                    } else {
+                        Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }
