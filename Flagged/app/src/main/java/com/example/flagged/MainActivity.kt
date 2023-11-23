@@ -47,7 +47,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         submitButton.setOnClickListener {
-            val startTime = System.currentTimeMillis()
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
             if(!db.authUser(username,password)){
@@ -62,7 +61,6 @@ class MainActivity : AppCompatActivity() {
             val intent= Intent(this,ShopActivity::class.java)
                 //Send the username to the next activity
             intent.putExtra("username",username)
-            println("Login time taken: ${System.currentTimeMillis() - startTime}ms")
             startActivity(intent)
             }
         }
