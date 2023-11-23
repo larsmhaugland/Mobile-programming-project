@@ -17,7 +17,7 @@ class EditFlagActivity : AppCompatActivity() {
         setContentView(R.layout.activity_edit_flag)
 
         val db = FirestoreDB.getInstance()
-
+        //Retrieve the data of the flag from the intent and display it to the user
         var name = intent.getStringExtra("flagName") ?: ""
         var description = intent.getStringExtra("flagDescription") ?: ""
         var category = intent.getStringExtra("flagCategory") ?: ""
@@ -44,7 +44,7 @@ class EditFlagActivity : AppCompatActivity() {
             category = editCategory.text.toString()
             price = editPrice.text.toString().toInt()
             stock = editStock.text.toString().toInt()
-            val flag = Flag(name, stock, price, description, "image", category)
+            val flag = Flag(name, stock, price, description, name.lowercase(), category)
             db.patchFlag(flag)
             finish()
         }
