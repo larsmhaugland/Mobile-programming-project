@@ -23,8 +23,10 @@ class AdminActivity : AppCompatActivity(){
      * */
     override fun onResume() {
         super.onResume()
+        //get the database instance retrieve the flags from the database
         val db = FirestoreDB.getInstance()
         flagItems = db.getFlags()
+        //Populate the flag adapter with the flags from the database
         adapter = FlagAdapterAdmin(this, flagItems)
         flagListView.adapter = adapter
     }
@@ -37,6 +39,7 @@ class AdminActivity : AppCompatActivity(){
         setContentView(R.layout.activity_admin)
         val db = FirestoreDB.getInstance()
 
+        //Retrieve the search field and the list view
         editTextSearch = findViewById(R.id.searchField)
         flagListView = findViewById(R.id.itemListView)
 
@@ -45,14 +48,21 @@ class AdminActivity : AppCompatActivity(){
         adapter = FlagAdapterAdmin(this, flagItems)
         flagListView.adapter = adapter
 
+        //Add button triggers the AddFlagActivity
         val addButton = findViewById<AppCompatButton>(R.id.addButton)
         addButton.setOnClickListener {
             val intent = Intent(this, AddFlagActivity::class.java)
             startActivity(intent)
         }
 
-
+        //Search field triggers the search functions
         editTextSearch.addTextChangedListener(object : TextWatcher {
+            /** This function is called before the user types in the search field.
+             *  @param s The text in the search field.
+             *  @param start The start index of the text.
+             *  @param before The length of the text before the change.
+             *  @param count The length of the text after the change.
+             * */
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
             /** This function is called when the user types in the search field.
@@ -63,18 +73,21 @@ class AdminActivity : AppCompatActivity(){
             * */
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString()
+                //Making a mutable list in order to write Flags to it
                 val filteredFlagItems = mutableListOf<Flag>()
 
+                //Filtering the flags by flags that start with the search text
                 val itemsStartingWithSearchText = flagItems.filter { flagItem ->
                     flagItem.name.startsWith(searchText, ignoreCase = true)
                 }
                 filteredFlagItems.addAll(itemsStartingWithSearchText)
-
+                //Filtering the flags by flags that contain the search text
+                //Adding them after the flags that start with the search text
                 val itemsContainingSearchText = flagItems.filter { flagItem ->
                     flagItem.name.contains(searchText, ignoreCase = true) && !filteredFlagItems.contains(flagItem)
                 }
                 filteredFlagItems.addAll(itemsContainingSearchText)
-
+                //Populating a new adapter with the filtered flags
                 val newAdapter = FlagAdapterAdmin(this@AdminActivity, filteredFlagItems)
                 flagListView.adapter = newAdapter
             }
@@ -100,18 +113,21 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var itemView = convertView
         if (itemView == null) {
+            //If the view is null, inflate the view using the admin list layout
             itemView =
                 LayoutInflater.from(context).inflate(R.layout.activity_admin_list, parent, false)
         }
 
+        //Retrieve the views from the layout
         val flagNameTextView = itemView?.findViewById<TextView>(R.id.itemName)
         val flagImageView = itemView?.findViewById<ImageView>(R.id.itemImage)
         val flagPriceTextView = itemView?.findViewById<TextView>(R.id.itemPrice)
         val flagStockTextView = itemView?.findViewById<TextView>(R.id.itemStock)
         val flagDescriptionTextView = itemView?.findViewById<TextView>(R.id.itemDescription)
 
+        //Find the current flag item
         val currentFlagItem = getItem(position)
-
+        //Set the edit button to trigger the EditFlagActivity for the current flag items values
         itemView?.findViewById<Button>(R.id.editFlagButton)?.setOnClickListener() {
             val intent = Intent(context, EditFlagActivity::class.java)
             intent.putExtra("flagName", currentFlagItem?.name)
@@ -121,6 +137,7 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
             intent.putExtra("flagCategory", currentFlagItem?.category)
             context.startActivity(intent)
         }
+        //Set the text of the views to the current flag item's values
         flagNameTextView?.text = currentFlagItem?.name
         val image =
             context.resources.getIdentifier(currentFlagItem?.image, "drawable", context.packageName)
@@ -131,6 +148,7 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
 
         val db = FirestoreDB.getInstance()
 
+        //Set the delete button to trigger a confirmation dialog
         val deleteButton = itemView?.findViewById<AppCompatButton>(R.id.deleteButton)
         deleteButton?.setOnClickListener {
             showConfirmationDialog(object : FlagAdapterAdmin.ConfirmationCallback {
@@ -168,7 +186,7 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
                 callback.onCancelled()
                 dialog.dismiss()
             }
-
+        //Create and show the dialog
         val alertDialog: AlertDialog = builder.create()
         alertDialog.show()
 

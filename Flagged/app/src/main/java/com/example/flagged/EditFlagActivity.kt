@@ -53,6 +53,9 @@ class EditFlagActivity : AppCompatActivity() {
         deleteButton.setOnClickListener {
 
             showConfirmationDialog(object : ConfirmationCallback {
+                /**
+                 *  This function is called when the user confirms the deletion.
+                 * */
                 override fun onConfirmed() {
                     // User clicked Yes, perform the deletion
                     val flag = db.getFlags().find { it.name == name }
@@ -61,7 +64,9 @@ class EditFlagActivity : AppCompatActivity() {
                     }
                     finish()
                 }
-
+                /**
+                 *  This function is called when the user cancels the deletion.
+                 * */
                 override fun onCancelled() {
                     // User clicked No or dismissed the dialog
                     // No need to do anything
