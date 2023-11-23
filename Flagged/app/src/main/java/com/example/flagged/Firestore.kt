@@ -108,29 +108,6 @@ class FirestoreDB private constructor(){
         }
     }
 
-    fun updatePrice(name : String, price : Int) : Boolean{
-        if(price < 0)
-            return false
-        if(flags.find { it.name == name } == null)
-            return false
-        var success : Boolean
-        runBlocking {
-            success = try {
-                db.collection("flags")
-                    .document(name)
-                    .update("price", price)
-                    .await()
-                println("Price updated")
-                flags.find { it.name == name }?.price = price
-                true
-            } catch (e: Exception) {
-                println("Error updating price: $e")
-                false
-            }
-        }
-        return success
-    }
-
     fun patchFlag(flag : Flag) : Boolean {
         return try{
             db.collection("flags")
