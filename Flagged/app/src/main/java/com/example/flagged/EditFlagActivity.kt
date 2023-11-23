@@ -34,11 +34,7 @@ class EditFlagActivity : AppCompatActivity() {
         val editCategory = findViewById<EditText>(R.id.editCategory)
         editCategory.setText(category)
 
-        // If the flag doesn't exist, create a new one
-        var flag = db.getFlags().find { it.name == name }
-        if (flag == null) {
-            flag = Flag(name, stock, price, description, name.lowercase(), category)
-        }
+
 
         // Save the flag to the database
         val saveButton = findViewById<AppCompatButton>(R.id.saveFlagButton)
@@ -59,7 +55,10 @@ class EditFlagActivity : AppCompatActivity() {
             showConfirmationDialog(object : ConfirmationCallback {
                 override fun onConfirmed() {
                     // User clicked Yes, perform the deletion
-                    db.deleteFlag(flag)
+                    val flag = db.getFlags().find { it.name == name }
+                    if (flag != null){
+                        db.deleteFlag(flag)
+                    }
                     finish()
                 }
 
