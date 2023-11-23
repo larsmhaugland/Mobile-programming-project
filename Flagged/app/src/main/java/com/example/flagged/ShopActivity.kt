@@ -26,7 +26,11 @@ class ShopActivity : AppCompatActivity(){
     private lateinit var editTextSearch: EditText
     private var isReverseSort = false
 
-
+    /**
+     *  Sort a list alphabetically
+     *  @param items A list of flag items
+     *  @return A list of flag items
+     * */
     private fun sortAlphabetically(items: List<Flag>): List<Flag> {
         return items.sortedBy { it.name }
     }

@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         val usernameInput = findViewById<EditText>(R.id.usernameEditText)
         val passwordInput = findViewById<EditText>(R.id.passwordEditText)
+        //Clear the username and password fields
         usernameInput.setText("")
         passwordInput.setText("")
     }
@@ -36,20 +37,23 @@ class MainActivity : AppCompatActivity() {
         val passwordInput = findViewById<EditText>(R.id.passwordEditText)
         val db = FirestoreDB.getInstance()
 
+        //Set the click listener for the button to register a user
         registerButton.setOnClickListener {
             val intent= Intent(this,RegisterActivity::class.java)
             startActivity(intent)
         }
-
+        //Set the click listener for the button to change the password
         changePasswordButton.setOnClickListener {
             val intent= Intent(this,ChangePasswordActivity::class.java)
             startActivity(intent)
         }
-
+        //Set the click listener for the button to login
         submitButton.setOnClickListener {
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
+            //Check if the user exists in the database
             if(!db.authUser(username,password)){
+                //If the user does not exist, show a toast message and return
                 Toast.makeText(applicationContext, "Wrong username or password!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }

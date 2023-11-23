@@ -26,7 +26,7 @@ class AddFlagActivity : AppCompatActivity() {
         val flagCategoryInput = findViewById<Spinner>(R.id.categorySpinner)
         val addButton = findViewById<AppCompatButton>(R.id.addButton)
 
-        //Populating the spinner with the categories
+        //Setting the categories and populating the spinner with them
         val categories = arrayOf("Country", "Naval", "County/City", "Limited Edition", "LGBTQ+")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -51,6 +51,7 @@ class AddFlagActivity : AppCompatActivity() {
                 image = name.lowercase(),
             )
             db.addFlag(flag)
+            //Return to the admin main activity
             finish()
         }
 
