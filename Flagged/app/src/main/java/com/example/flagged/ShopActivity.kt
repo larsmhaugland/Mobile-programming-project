@@ -17,7 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import java.io.Serializable
 
-var Username = ""
+var Username = ""       //Global variable to store the username of the user
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
@@ -34,15 +34,36 @@ class ShopActivity : AppCompatActivity(){
     private fun sortAlphabetically(items: List<Flag>): List<Flag> {
         return items.sortedBy { it.name }
     }
+    /**
+     *  Sort a list reverse alphabetically
+     *  @param items A list of flag items
+     *  @return A list of flag items
+     * */
     private fun sortReverseAlphabetically(items: List<Flag>): List<Flag> {
         return items.sortedByDescending { it.name }
     }
+    /**
+     *  Sort a list by price from low to high
+     *  @param items A list of flag items
+     *  @return A list of flag items
+     * */
     private fun sortLowHighByPrice(items: List<Flag>): List<Flag> {
         return items.sortedBy { it.price.toDouble() }
     }
+    /**
+     *  Sort a list by price from high to low
+     *  @param items A list of flag items
+     *  @return A list of flag items
+     * */
     private fun sortHighLowByPrice(items: List<Flag>): List<Flag> {
         return items.sortedByDescending { it.price.toDouble() }
     }
+    /**
+     *  Filter a list by category
+     *  @param items A list of flag items
+     *  @param category The category to filter by
+     *  @return A list of flag items
+     * */
     private fun filterByCategory(items: List<Flag>, category: String): List<Flag> {
         return items.filter { it.category == category }
     }
@@ -128,7 +149,7 @@ class ShopActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
-        val startTime = System.currentTimeMillis()
+
         val username = intent.getStringExtra("username")
         val db = FirestoreDB.getInstance()
         editTextSearch = findViewById(R.id.searchField)
@@ -161,8 +182,23 @@ class ShopActivity : AppCompatActivity(){
         flagListView.adapter = adapter
 
         editTextSearch.addTextChangedListener(object : TextWatcher {
+            /**
+             * This function is called before the text is changed.
+             * @param s The text before it is changed.
+             * @param start The start index of the text.
+             * @param count The number of characters that will be changed.
+             * @param after The number of characters in the text after the change occurs.
+             */
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
+
+            /**
+             * This function is called when the text is changed.
+             * @param s The text after it is changed.
+             * @param start The start index of the text.
+             * @param before The number of characters that were changed.
+             * @param count The number of characters in the text after the change occurs.
+             */
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString()
                 val filteredFlagItems = mutableListOf<Flag>()
@@ -180,10 +216,14 @@ class ShopActivity : AppCompatActivity(){
                 val newAdapter = FlagAdapter(this@ShopActivity, filteredFlagItems, intent)
                 flagListView.adapter = newAdapter
             }
+
+            /**
+             * This function is called after the text is changed.
+             * @param s The text after it is changed.
+             */
             override fun afterTextChanged(s: Editable?) {
             }
         })
-        println("Shop time taken: ${System.currentTimeMillis() - startTime}ms")
     }
 }
 
@@ -204,7 +244,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         if (itemView == null) {
             itemView = LayoutInflater.from(context).inflate(R.layout.list_item_layout, parent, false)
         }
-
+        //Get the views from the layout
         val flagNameTextView = itemView?.findViewById<TextView>(R.id.itemName)
         val flagImageView = itemView?.findViewById<ImageView>(R.id.itemImage)
         val flagPriceTextView = itemView?.findViewById<TextView>(R.id.itemPrice)
@@ -216,12 +256,15 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         val flagNumberText = itemView?.findViewById<TextView>(R.id.cartItemAmount)
         val flagPlusButton = itemView?.findViewById<AppCompatButton>(R.id.plusButton)
 
+        //Get the current flag item
         val currentFlagItem = getItem(position)
+        //Get the current user
         val db = FirestoreDB.getInstance()
         val username = intent.getStringExtra("username")
         var user = db.getUsers().find { it.username == username }
-
+        //If the user is logged in, check if the flag is in the users cart
         if (user != null) {
+            //If the flag is in the users cart, show the cart controls, otherwise show the add to cart button
             if (user.cart.find { it.name == currentFlagItem?.name } != null) {
                 flagAddToCart?.visibility = View.GONE
                 flagCartLayout?.visibility = View.VISIBLE
@@ -239,22 +282,18 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
             Log.d("Flag", "flag: $flag", )
             if (username != null) {
                 user = db.getUsers().find { it.username == username }   //Get the user from the database
-                Log.d("User Patching", "Before: ${user?.favouriteFlags}")
-                //if (user != null) {
+
                     //If the flag is already in the users favourites, remove it, otherwise add it
                     //Change the drawable resource to reflect the change
-                    if (user!!.favouriteFlags.contains(flag?.name)) {
-                        user!!.favouriteFlags.remove(flag?.name)
-                        favouriteButton?.setBackgroundResource(R.drawable.favourite_unfilled)
+                    if (user!!.favouriteFlags.contains(flag.name)) {
+                        user!!.favouriteFlags.remove(flag.name)
+                        favouriteButton.setBackgroundResource(R.drawable.favourite_unfilled)
                     } else {
                         user!!.favouriteFlags.add(flag.name)
-                        favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
+                        favouriteButton.setBackgroundResource(R.drawable.favourite_filled)
                         Log.d("Favourites", "added flag:" + flag.name, )
                     }
                     db.patchUser(user!!)      //Send the updated user data to the database
-                    println("Function finished")
-               // }
-                Log.d("User Patching", "After: ${user?.favouriteFlags}")
             }
         }
 
@@ -266,6 +305,7 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
         flagDescriptionTextView?.text = currentFlagItem?.description
         //Set the favourites button when the view is originally created
         if(user !=null){
+            //If the flag is in the users favourites, set the drawable to filled, otherwise set it to unfilled
             if(user!!.favouriteFlags.contains(currentFlagItem?.name)){
                 favouriteButton?.setBackgroundResource(R.drawable.favourite_filled)
             } else {
@@ -285,9 +325,11 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
                             .find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
                         flagNumberText?.text = amount.toString()
                     } else {
+                        //If flag couldn't be added to the cart display message
                         Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    //If flag is out of stock display message
                     Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -319,14 +361,15 @@ class FlagAdapter(context: Context, private val flagItems: List<Flag>, private v
                             .find { it.username == username }?.cart?.find { it.name == currentFlagItem.name }?.amount
                         flagNumberText?.text = amount.toString()
                     } else {
+                        //If flag couldn't be added to the cart display message
                         Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    //If flag is out of stock display message
                     Toast.makeText(context, "Flag out of stock", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-
         return itemView!!
     }
 }
