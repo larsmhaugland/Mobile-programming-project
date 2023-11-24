@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 
+/**
+ * This activity is used to add a flag to the database.
+ * */
 class AddFlagActivity : AppCompatActivity() {
     /**
      *  This function is called when the activity is created.
@@ -50,10 +52,10 @@ class AddFlagActivity : AppCompatActivity() {
                 category = category,
                 image = name.lowercase(),
             )
+            //Add the flag to the database
             db.addFlag(flag)
             //Return to the admin main activity
             finish()
         }
-
     }
 }

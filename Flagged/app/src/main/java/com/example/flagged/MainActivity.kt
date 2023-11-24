@@ -8,6 +8,9 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 
+/**
+ * This activity is used to login to the application.
+ */
 class MainActivity : AppCompatActivity() {
     /**
      *  This function is called when the activity is resumed.
@@ -68,6 +71,5 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             }
         }
-
     }
 }

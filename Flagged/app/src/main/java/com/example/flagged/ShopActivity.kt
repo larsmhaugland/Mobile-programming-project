@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.widget.*
 import android.content.Context
 import android.content.Intent
-import android.os.Parcel
-import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -15,9 +13,19 @@ import android.view.ViewGroup
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
-import java.io.Serializable
 
 var Username = ""       //Global variable to store the username of the user
+
+/**
+ * This activity is used to display the shop to the user.
+ *
+ * @property flagItems A list of flag items.
+ * @property filteredFlagItems A list of flag items that have been filtered.
+ * @property adapter The adapter for the list of flag items.
+ * @property isReverseSort A boolean that indicates whether the list of flag items is sorted in reverse.
+ * @property editTextSearch The search bar.
+ * @property flagListView The list of flag items.
+ * */
 class ShopActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
@@ -69,8 +77,8 @@ class ShopActivity : AppCompatActivity(){
     }
 
     /**
-     *      Filter pop-up dialog
-     *      Allows the user to filter the flags by category or sort them by name or price
+     *  Filter pop-up dialog
+     *  Allows the user to filter the flags by category or sort them by name or price
      * */
     private fun showFilterDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.filter_options, null)
@@ -188,7 +196,7 @@ class ShopActivity : AppCompatActivity(){
              * @param start The start index of the text.
              * @param count The number of characters that will be changed.
              * @param after The number of characters in the text after the change occurs.
-             */
+             * */
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -198,7 +206,7 @@ class ShopActivity : AppCompatActivity(){
              * @param start The start index of the text.
              * @param before The number of characters that were changed.
              * @param count The number of characters in the text after the change occurs.
-             */
+             * */
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val searchText = s.toString()
                 val filteredFlagItems = mutableListOf<Flag>()
@@ -220,7 +228,7 @@ class ShopActivity : AppCompatActivity(){
             /**
              * This function is called after the text is changed.
              * @param s The text after it is changed.
-             */
+             * */
             override fun afterTextChanged(s: Editable?) {
             }
         })

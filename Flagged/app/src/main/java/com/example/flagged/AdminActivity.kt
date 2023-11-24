@@ -13,6 +13,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
+
+/**
+ * This activity is used to display the admin page.
+ *
+ * @property flagListView The list view of the flags.
+ * @property flagItems The list of flags.
+ * @property adapter The adapter for the list view.
+ * @property editTextSearch The search field.
+ */
 class AdminActivity : AppCompatActivity(){
     private lateinit var flagListView: ListView
     private lateinit var flagItems: List<Flag>
@@ -42,15 +51,16 @@ class AdminActivity : AppCompatActivity(){
         //Retrieve the search field and the list view
         editTextSearch = findViewById(R.id.searchField)
         flagListView = findViewById(R.id.itemListView)
-
+        //Retrieve the flags from the database
         flagItems = db.getFlags()
-
+        //Populate the flag adapter with the flags from the database
         adapter = FlagAdapterAdmin(this, flagItems)
         flagListView.adapter = adapter
 
         //Add button triggers the AddFlagActivity
         val addButton = findViewById<AppCompatButton>(R.id.addButton)
         addButton.setOnClickListener {
+            //Start the AddFlagActivity
             val intent = Intent(this, AddFlagActivity::class.java)
             startActivity(intent)
         }
@@ -157,14 +167,12 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
                     db.deleteFlag(currentFlagItem!!)
                     notifyDataSetChanged()
                 }
-
                 override fun onCancelled() {
                     // User clicked No or dismissed the dialog
                     // No need to do anything
                 }
             })
         }
-
         return itemView!!
     }
     /**
@@ -172,8 +180,8 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
      *  @param callback The callback to be called when the user confirms or cancels the deletion.
      * */
     private fun showConfirmationDialog(callback: ConfirmationCallback) {
+        //Build the dialog
         val builder = AlertDialog.Builder(context)
-
         builder.setTitle("Confirm Deletion")
             .setMessage("Are you sure you want to delete the flag?")
             .setPositiveButton("Yes") { dialog: DialogInterface, _: Int ->
@@ -189,12 +197,13 @@ class FlagAdapterAdmin(context: Context, private val flagItems: List<Flag>) :
         //Create and show the dialog
         val alertDialog: AlertDialog = builder.create()
         alertDialog.show()
-
     }
 
+     /**
+     * Interface for the confirmation callback.
+     * */
     interface ConfirmationCallback {
         fun onConfirmed()
         fun onCancelled()
     }
-
 }

@@ -7,7 +7,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 
+/**
+ * This activity is used to edit a flag.
+ */
 class EditFlagActivity : AppCompatActivity() {
+
     /**
      *  This function is called when the activity is created.
      *  @param savedInstanceState The saved instance state bundle.
@@ -33,8 +37,6 @@ class EditFlagActivity : AppCompatActivity() {
         editDescription.setText(description)
         val editCategory = findViewById<EditText>(R.id.editCategory)
         editCategory.setText(category)
-
-
 
         // Save the flag to the database
         val saveButton = findViewById<AppCompatButton>(R.id.saveFlagButton)
@@ -94,12 +96,13 @@ class EditFlagActivity : AppCompatActivity() {
                 callback.onCancelled()
                 dialog.dismiss()
             }
-
         val alertDialog: AlertDialog = builder.create()
         alertDialog.show()
-
     }
 
+    /**
+     *  This interface is used to handle the user's confirmation or cancellation of the deletion.
+     * */
     interface ConfirmationCallback {
         fun onConfirmed()
         fun onCancelled()

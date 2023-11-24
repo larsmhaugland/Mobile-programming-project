@@ -5,7 +5,6 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import java.io.Serializable
 import java.security.MessageDigest
 
 
@@ -37,6 +36,7 @@ class FirestoreDB private constructor(){
 
     /**
      * Companion object for singleton
+     * @property instance The instance of the database
      */
     companion object {
         private val instance = FirestoreDB()

@@ -1,11 +1,12 @@
 package com.example.flagged
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.ListView
 
+/**
+ * This activity is used to display the favourite flags of a user.
+ */
 class FavouritesActivity : AppCompatActivity() {
     /**
      *  This function is called when the activity is created.
@@ -15,6 +16,7 @@ class FavouritesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
 
+        //Get the database instance
         val db = FirestoreDB.getInstance()
         // Get the username from the intent
         val username = intent.getStringExtra("username")
@@ -24,7 +26,7 @@ class FavouritesActivity : AppCompatActivity() {
         favouritesButton.setOnClickListener{
             finish()
         }
-
+        //Find the user in the database
         val user = db.getUsers().find { it.username == username }
         val flags = db.getFlags()
         //Filter the flags to only include the favourite flags
