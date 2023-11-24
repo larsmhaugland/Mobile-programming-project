@@ -31,8 +31,8 @@ class ExampleInstrumentedTest {
             email = "test@test.com",
             favouriteFlags = arrayListOf()
         )
-        val result = db.addUser(user)
-        assertEquals(true, result.isSuccess)
+
+        assertEquals(true, db.addUser(user))
         assertEquals(true,db.authUser("test","test"))
 
         val users = db.getUsers()

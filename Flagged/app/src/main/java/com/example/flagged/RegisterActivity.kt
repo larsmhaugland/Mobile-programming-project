@@ -54,7 +54,7 @@ class RegisterActivity : AppCompatActivity()  {
                 favouriteFlags = arrayListOf(),
                 cart = arrayListOf()
             )
-            if(db.addUser(user).isFailure){
+            if(!db.addUser(user)){
                 return@setOnClickListener
             }
             finish()
